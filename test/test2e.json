@@ -1,0 +1,100 @@
+
+{
+	"response": {
+		"version": "0.1",
+		"termsofService": "http://www.wunderground.com/weather/api/d/terms.html",
+		"features": {
+			"forecast": 1
+		}
+	},
+	"forecast": {
+		"txt_forecast": {
+			"date": "12:25 PM EST",
+			"forecastday": {
+				"period": 7,
+				"icon": "nt_partlycloudy",
+				"icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+				"title": "Saturday Night",
+				"fcttext": "Partly cloudy early with increasing clouds overnight. Low 29F. Winds NW at 15 to 25 mph.",
+				"fcttext_metric": "Partly cloudy early with increasing clouds overnight. Low -2C. Winds NW at 25 to 40 km/h.",
+				"pop": "20"
+			}
+		},
+		"simpleforecast": {
+			"forecastday": {
+				"date": {
+					"epoch": "1479600000",
+					"pretty": "7:00 PM EST on November 19, 2016",
+					"day": 19,
+					"month": 11,
+					"year": 2016,
+					"yday": 323,
+					"hour": 19,
+					"min": "00",
+					"sec": 0,
+					"isdst": "0",
+					"monthname": "November",
+					"monthname_short": "Nov",
+					"weekday_short": "Sat",
+					"weekday": "Saturday",
+					"ampm": "PM",
+					"tz_short": "EST",
+					"tz_long": "America/New_York"
+				},
+				"period": 4,
+				"high": {
+					"fahrenheit": "40",
+					"celsius": "4"
+				},
+				"low": {
+					"fahrenheit": "29",
+					"celsius": "-2"
+				},
+				"conditions": "Partly Cloudy",
+				"icon": "partlycloudy",
+				"icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+				"skyicon": "",
+				"pop": 20,
+				"qpf_allday": {
+					"in": 0.00,
+					"mm": 0
+				},
+				"qpf_day": {
+					"in": 0.00,
+					"mm": 0
+				},
+				"qpf_night": {
+					"in": 0.00,
+					"mm": 0
+				},
+				"snow_allday": {
+					"in": 0.0,
+					"cm": 0.0
+				},
+				"snow_day": {
+					"in": 0.0,
+					"cm": 0.0
+				},
+				"snow_night": {
+					"in": 0.0,
+					"cm": 0.0
+				},
+				"maxwind": {
+					"mph": 30,
+					"kph": 48,
+					"dir": "WNW",
+					"degrees": 287
+				},
+				"avewind": {
+					"mph": 24,
+					"kph": 39,
+					"dir": "WNW",
+					"degrees": 287
+				},
+				"avehumidity": 60,
+				"maxhumidity": 0,
+				"minhumidity": 0
+			}
+		}
+	}
+}

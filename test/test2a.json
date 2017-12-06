@@ -1,0 +1,18 @@
+{
+  "range": "Sheet1!A2:B7",
+  "majorDimension": "COLUMNS",
+  "values": [
+    [
+      "Albert Albrecht",
+      "Bob Billings",
+      "Charlie Chaplin",
+      "Dave Dink"
+    ],
+    [
+      "1234",
+      "2234",
+      "3234",
+      "4234"
+    ]
+  ]
+}
