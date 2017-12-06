@@ -501,6 +501,29 @@ public:
 	 */
 	void insertValue(int value) { insertsprintf("%d", value); }
 
+	/**
+	 * Inserts an unsigned integer value.
+	 *
+	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
+	 * as those functions take care of inserting the separators between items.
+	 */
+	void insertValue(unsigned int value) { insertsprintf("%u", value); }
+
+	/**
+	 * Inserts a long integer value.
+	 *
+	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
+	 * as those functions take care of inserting the separators between items.
+	 */
+	void insertValue(long value) { insertsprintf("%ld", value); }
+
+	/**
+	 * Inserts an unsigned long integer value.
+	 *
+	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
+	 * as those functions take care of inserting the separators between items.
+	 */
+	void insertValue(unsigned long value) { insertsprintf("%lu", value); }
 
 	/**
 	 * Inserts a floating point value.
