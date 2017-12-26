@@ -135,6 +135,8 @@ int value = parser.getReference().key("forecast").key("txt_forecast").key("forec
 // value == 7
 ```
 
+If you have a complicated JSON file to decode, using the [JSON Parser Tool](http://rickkas7.github.io/jsonparser/) makes it easy. You paste in your JSON and it formats it nicely. Click on a row and will generate the fluent accessor to get that value!
+
 
 ## JSON Generator
 
