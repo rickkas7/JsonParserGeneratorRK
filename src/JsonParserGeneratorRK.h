@@ -232,6 +232,44 @@ public:
 	}
 
 	/**
+	 * Gets the key/value pair of an object by index (0 = first, 1 = second, ...)
+	 *
+	 * Normally you get a value in an object by its key, but if you want to iterate all of the keys you can
+	 * use this method.
+	 *
+	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
+	 * or object within an object, use getValueTokenByKey() instead.
+	 */
+	template<class T>
+	bool getKeyValueByIndex(const JsonParserGeneratorRK::jsmntok_t *container, size_t index, String &key, T &result) const {
+		const JsonParserGeneratorRK::jsmntok_t *keyToken;
+		const JsonParserGeneratorRK::jsmntok_t *valueToken;
+
+		if (getKeyValueTokenByIndex(container, keyToken, valueToken, index)) {
+			getTokenValue(keyToken, key);
+			return getTokenValue(valueToken, result);
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * Gets the key/value pair of the outer object by index (0 = first, 1 = second, ...)
+	 *
+	 * Normally you get a value in an object by its key, but if you want to iterate all of the keys you can
+	 * use this method.
+	 *
+	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
+	 * or object within an object, use getValueTokenByKey() instead.
+	 */
+	template<class T>
+	bool getOuterKeyValueByIndex(size_t index, String &key, T &result) const {
+		return getKeyValueByIndex(getOuterObject(), index, key, result);
+	}
+
+
+	/**
 	 * Given an array token in arrayContainer, gets the value with the specified index.
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array

@@ -42,6 +42,20 @@ void runTest() {
 		return;
 	}
 
+	String keyName;
+	if (!parser1.getOuterKeyValueByIndex(0, keyName, strValue)) {
+		Serial.println("failed to get test2 t1 by index");
+		return;
+	}
+	if (keyName != "t1") {
+		Serial.printlnf("wrong key name test2 t1 was %s by index", keyName.c_str());
+		return;
+	}
+	if (strValue != "abc") {
+		Serial.printlnf("wrong value test2 t1 was %s by index", strValue.c_str());
+		return;
+	}
+
 	int intValue;
 	if (!parser1.getOuterValueByKey("t2", intValue)) {
 		Serial.println("failed to get test2 t2");
@@ -51,6 +65,21 @@ void runTest() {
 		Serial.printlnf("wrong value test2 t2 was %d", intValue);
 		return;
 	}
+	intValue = -1;
+
+	if (!parser1.getOuterKeyValueByIndex(1, keyName, intValue)) {
+		Serial.println("failed to get test2 t2 by index");
+		return;
+	}
+	if (keyName != "t2") {
+		Serial.printlnf("wrong key name test2 t2 was %s by index", keyName.c_str());
+		return;
+	}
+	if (intValue != 1234) {
+		Serial.printlnf("wrong value test2 t2 was %d by index", intValue);
+		return;
+	}
+
 
 	float floatValue;
 	if (!parser1.getOuterValueByKey("t3", floatValue)) {
