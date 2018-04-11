@@ -232,10 +232,21 @@ public:
 	}
 
 	/**
-	 * Gets the key/value pair of an object by index (0 = first, 1 = second, ...)
+	 * Gets the key/value pair of an object by index
+	 *
+	 * @param container The object to look in (see getOuterKeyValueByIndex if you want to the outermost object you parsed)
+	 *
+	 * @param index 0 = first, 1 = second, ...
+	 *
+	 * @param key Filled in with the name of the key
+	 *
+	 * @param result Filled in with the value. The value can be of type: bool, int, unsigned long, float, double, String,
+	 * or (char *, size_t&).
+	 *
+	 * @return true if the call succeeded or false if it failed.
 	 *
 	 * Normally you get a value in an object by its key, but if you want to iterate all of the keys you can
-	 * use this method.
+	 * use this method. Call it until it returns false.
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
 	 * or object within an object, use getValueTokenByKey() instead.
@@ -259,6 +270,15 @@ public:
 	 *
 	 * Normally you get a value in an object by its key, but if you want to iterate all of the keys you can
 	 * use this method.
+	 *
+	 * @param index 0 = first, 1 = second, ...
+	 *
+	 * @param key Filled in with the name of the key
+	 *
+	 * @param result Filled in with the value. The value can be of type: bool, int, unsigned long, float, double, String,
+	 * or (char *, size_t&).
+	 *
+	 * @return true if the call succeeded or false if it failed.
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
 	 * or object within an object, use getValueTokenByKey() instead.
