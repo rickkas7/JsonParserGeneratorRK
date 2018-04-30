@@ -1,4 +1,6 @@
 // Dummy particle.h file for testing logdata.cpp module from gcc
+#ifndef __PARTICLE_H
+#define __PARTICLE_H
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,3 +18,4 @@ public:
 	inline int read() { return 0; }
 };
 
+#endif /* __PARTICLE_H */

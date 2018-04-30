@@ -500,6 +500,98 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// Test data from Github issue
+	// https://github.com/rickkas7/JsonParserGeneratorRK/issues/1
+	// {"A--":{"M":{"M":2,"U":5000,"T":10,"C":[0,255]}}}
+	{
+		JsonParser jp;
+		char *data = readTestData("test2f.json");
+
+		jp.addString(data);
+		free(data);
+
+		bool bResult = jp.parse();
+		assert(bResult);
+
+		// Check fluent parser
+		assert(jp.getReference().key("A--").key("M").key("U").valueInt() == 5000);
+
+		// Check iteration
+		for(size_t ii = 0; ; ii++) {
+			const JsonParserGeneratorRK::jsmntok_t *keyToken;
+			const JsonParserGeneratorRK::jsmntok_t *valueToken;
+			String name;
+
+			if (!jp.getKeyValueTokenByIndex(jp.getOuterObject(), keyToken, valueToken, ii)) {
+				// Reached end
+				assert(ii == 1);
+				break;
+			}
+
+			bResult = jp.getTokenValue(keyToken, name);
+			assert(bResult);
+
+			assert(name == "A--");
+
+			const JsonParserGeneratorRK::jsmntok_t *valueTokenInnerM;
+
+			bResult = jp.getValueTokenByKey(valueToken, "M", valueTokenInnerM);
+			assert(bResult);
+
+
+			// Parse inner
+			for(size_t jj = 0; ; jj++) {
+				const JsonParserGeneratorRK::jsmntok_t *keyTokenInner;
+				const JsonParserGeneratorRK::jsmntok_t *valueTokenInner;
+
+				if (!jp.getKeyValueTokenByIndex(valueTokenInnerM, keyTokenInner, valueTokenInner, jj)) {
+					// Reached end
+					break;
+				}
+				bResult = jp.getTokenValue(keyTokenInner, name);
+				assert(bResult);
+
+				int intValue;
+
+				if (name == "M") {
+					bResult = jp.getTokenValue(valueTokenInner, intValue);
+					assert(bResult);
+					assert(intValue == 2);
+				}
+				else
+				if (name == "U") {
+					bResult = jp.getTokenValue(valueTokenInner, intValue);
+					assert(bResult);
+					assert(intValue == 5000);
+				}
+				else
+				if (name == "T") {
+					bResult = jp.getTokenValue(valueTokenInner, intValue);
+					assert(bResult);
+					assert(intValue == 10);
+				}
+				else
+				if (name == "C") {
+					assert(jp.getArraySize(valueTokenInner) == 2);
+
+					bResult = jp.getValueByIndex(valueTokenInner, 0, intValue);
+					assert(bResult);
+					assert(intValue == 0);
+
+					bResult = jp.getValueByIndex(valueTokenInner, 1, intValue);
+					assert(bResult);
+					assert(intValue == 255);
+
+				}
+				else {
+					assert(0);
+				}
+			}
+
+
+		}
+
+	}
 
 	// Writer test, unallocated buffer
 	{
