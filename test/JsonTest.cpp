@@ -115,7 +115,6 @@ int main(int argc, char *argv[]) {
 		assert(s == "2234");
 
 		// printJson(jp);
-
 	}
 	{
 		JsonParser jp;
@@ -505,6 +504,8 @@ int main(int argc, char *argv[]) {
 	// {"A--":{"M":{"M":2,"U":5000,"T":10,"C":[0,255]}}}
 	{
 		JsonParser jp;
+		String s;
+
 		char *data = readTestData("test2f.json");
 
 		jp.addString(data);
@@ -538,6 +539,10 @@ int main(int argc, char *argv[]) {
 			bResult = jp.getValueTokenByKey(valueToken, "M", valueTokenInnerM);
 			assert(bResult);
 
+			// Convert back to a JSON string
+			bResult = jp.getTokenJsonString(valueTokenInnerM, s);
+			assert(bResult);
+			assert(s == "{\"M\":2,\"U\":5000,\"T\":10,\"C\":[0,255]}");
 
 			// Parse inner
 			for(size_t jj = 0; ; jj++) {
@@ -563,6 +568,12 @@ int main(int argc, char *argv[]) {
 					bResult = jp.getTokenValue(valueTokenInner, intValue);
 					assert(bResult);
 					assert(intValue == 5000);
+
+					// Convert back to a string
+					bResult = jp.getTokenJsonString(valueTokenInner, s);
+					assert(bResult);
+
+					assert(s == "5000");
 				}
 				else
 				if (name == "T") {
@@ -582,12 +593,34 @@ int main(int argc, char *argv[]) {
 					assert(bResult);
 					assert(intValue == 255);
 
+					// Convert back to a string
+					bResult = jp.getTokenJsonString(valueTokenInner, s);
+					assert(bResult);
+
+					assert(s == "[0,255]");
 				}
 				else {
 					assert(0);
 				}
 			}
 
+			// Test converting back to JSON
+			// {"A--":{"M":{"M":2,"U":5000,"T":10,"C":[0,255]}}}
+			String s;
+			bResult = jp.getTokenJsonString(jp.getOuterToken(), s);
+			assert(bResult);
+
+			const char *expected = "{\"A--\":{\"M\":{\"M\":2,\"U\":5000,\"T\":10,\"C\":[0,255]}}}";
+
+			assert(s == expected);
+
+			char newJsonBuf[64];
+			size_t bufLen = sizeof(newJsonBuf);
+			bResult = jp.getTokenJsonString(jp.getOuterToken(), newJsonBuf, bufLen);
+			assert(bResult);
+
+			assert(bufLen = (strlen(expected) + 1));
+			assert(strcmp(newJsonBuf, expected) == 0);
 
 		}
 

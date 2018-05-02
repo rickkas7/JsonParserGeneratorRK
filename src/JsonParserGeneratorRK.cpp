@@ -461,6 +461,27 @@ bool JsonParser::getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, Js
 	return true;
 }
 
+bool JsonParser::getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, String &result) const {
+	result = "";
+	result.reserve(token->end - token->start + 3);
+
+	JsonParserString strWrapper(&result);
+	return getTokenJsonString(token, strWrapper);
+}
+
+bool JsonParser::getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, char *str, size_t &bufLen) const {
+	JsonParserString strWrapper(str, bufLen);
+	bool result = getTokenJsonString(token, strWrapper);
+	bufLen = strWrapper.getLength() + 1;
+	return result;
+}
+
+bool JsonParser::getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, JsonParserString &str) const {
+	str.append(&buffer[token->start], token->end - token->start);
+	return true;
+}
+
+
 // [static]
 void JsonParser::appendUtf8(uint16_t unicode, JsonParserString &str) {
 
@@ -597,6 +618,13 @@ void JsonParserString::append(char ch) {
 		length++;
 	}
 }
+
+void JsonParserString::append(const char *str, size_t len) {
+	for(size_t ii = 0; ii < len; ii++) {
+		append(str[ii]);
+	}
+}
+
 
 //
 //

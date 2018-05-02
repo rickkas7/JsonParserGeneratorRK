@@ -94,6 +94,7 @@ public:
 	JsonParserString(char *buf, size_t bufLen);
 
 	void append(char ch);
+	void append(const char *str, size_t len);
 	size_t getLength() const { return length; }
 
 protected:
@@ -448,6 +449,22 @@ public:
 	 * returned string will contain UTF-8.
 	 */
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, JsonParserString &str) const;
+
+	/**
+	 * Converts a token (object, array, string, or primitive) back into JSON
+	 */
+	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, String &result) const;
+
+	/**
+	 * Converts a token (object, array, string, or primitive) back into JSON
+	 */
+	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, char *str, size_t &strLen) const;
+
+	/**
+	 * Gets a token as a JSON string. This overload is typically used internally, normally you'd use
+	 * the version that takes a String& or char *, size_t.
+	 */
+	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, JsonParserString &str) const;
 
 	/**
 	 * Given a Unicode UTF-16 code point, converts it to UTF-8 and appends it to str.
