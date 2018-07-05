@@ -12,62 +12,59 @@ namespace JsonParserGeneratorRK {
 	// https://github.com/zserge/jsmn
 
 	/**
-	 * JSON type identifier. Basic types are:
-	 * 	o Object
-	 * 	o Array
-	 * 	o String
-	 * 	o Other primitive: number, boolean (true/false) or null
+	 * @brief JSON type identifier (object, array, string, primitive)
 	 */
 	typedef enum {
-		JSMN_UNDEFINED = 0,
-		JSMN_OBJECT = 1,
-		JSMN_ARRAY = 2,
-		JSMN_STRING = 3,
-		JSMN_PRIMITIVE = 4
+		JSMN_UNDEFINED = 0, //!< undefined JSON type
+		JSMN_OBJECT = 1, 	//!< JSON object
+		JSMN_ARRAY = 2,		//!< JSON array
+		JSMN_STRING = 3,	//!< JSON string
+		JSMN_PRIMITIVE = 4	//!< JSON primitive (number, true, false, or null)
 	} jsmntype_t;
 
+	/**
+	 * @brief JSMN error codes
+	 */
 	enum jsmnerr {
-		/* Not enough tokens were provided */
-		JSMN_ERROR_NOMEM = -1,
-		/* Invalid character inside JSON string */
-		JSMN_ERROR_INVAL = -2,
-		/* The string is not a full JSON packet, more bytes expected */
-		JSMN_ERROR_PART = -3
+		JSMN_ERROR_NOMEM = -1,	//!< Not enough tokens were provided
+		JSMN_ERROR_INVAL = -2,	//!< Invalid character inside JSON string
+		JSMN_ERROR_PART = -3	//!< The string is not a full JSON packet, more bytes expected
 	};
 
 	/**
-	 * JSON token description.
-	 * type		type (object, array, string etc.)
-	 * start	start position in JSON data string
-	 * end		end position in JSON data string
+	 * @brief JSON token description.
 	 */
 	typedef struct {
-		jsmntype_t type;
-		int start;
-		int end;
-		int size;
+		jsmntype_t type;	//!< type (object, array, string etc.)
+		int start;			//!< start position in JSON data string
+		int end;			//!< end position in JSON data string
+		int size;			//!< size
 	#ifdef JSMN_PARENT_LINKS
-		int parent;
+		int parent;			//!< parent object
 	#endif
 	} jsmntok_t;
 
 	/**
-	 * JSON parser. Contains an array of token blocks available. Also stores
-	 * the string being parsed now and current position in that string
+	 * @brief JSON parser
+	 *
+	 * Contains an array of token blocks available. Also stores
+	 * the string being parsed now and current position in that string.
 	 */
 	typedef struct {
-		unsigned int pos; /* offset in the JSON string */
-		unsigned int toknext; /* next token to allocate */
-		int toksuper; /* superior token node, e.g parent object or array */
+		unsigned int pos; 		//!< offset in the JSON string
+		unsigned int toknext;	//!< next token to allocate
+		int toksuper; 			//!< superior token node, e.g parent object or array
 	} jsmn_parser;
 
 	/**
-	 * Create JSON parser over an array of tokens
+	 * @brief Create JSON parser over an array of tokens
 	 */
 	void jsmn_init(jsmn_parser *parser);
 
 	/**
-	 * Run JSON parser. It parses a JSON data string into and array of tokens, each describing
+	 * @brief Run JSON parser.
+	 *
+	 * It parses a JSON data string into and array of tokens, each describing
 	 * a single JSON object.
 	 */
 	int jsmn_parse(jsmn_parser *parser, const char *js, size_t len,
@@ -77,7 +74,9 @@ namespace JsonParserGeneratorRK {
 }
 
 /**
- * Class used internally for writing to strings. This is a wrapper around either
+ * @brief Class used internally for writing to strings.
+ *
+ * This is a wrapper around either
  * String (the Wiring version) or a buffer and length. This allows writing to a static buffer
  * with no dynamic memory allocation at all.
  *
@@ -90,46 +89,139 @@ namespace JsonParserGeneratorRK {
  */
 class JsonParserString {
 public:
+	/**
+	 * @brief Construct a JsonParserString wrapping a Wiring String
+	 *
+	 * @param str A pointer Wiring String object to write to.
+	 */
 	JsonParserString(String *str);
+
+	/**
+	 * @brief Construct a JsonParserString wrapping a buffer and length
+	 *
+	 * @param buf A pointer to a buffer
+	 *
+	 * @param bufLen The length of the buffer in bytes
+	 */
 	JsonParserString(char *buf, size_t bufLen);
 
+	/**
+	 * @brief Append a single char to the underlying string
+	 *
+	 * @param ch The char to append.
+	 */
 	void append(char ch);
+
+	/**
+	 * @brief Append a buffer and length to the underlying string
+	 *
+	 * @param str A pointer to the character to add. Does not need to be null-terminated.
+	 *
+	 * @param len Length of the string to append in bytes.
+	 */
 	void append(const char *str, size_t len);
+
+	/**
+	 * @brief Get the length of the string.
+	 *
+	 * @return The string length in bytes. If the string contains UTF-8 characters, it will be the number
+	 * of bytes, not characters.
+	 *
+	 * For buffer and bufLenb, the maximum string length will be bufLen - 1 to leave room for the null terminator.
+	 */
 	size_t getLength() const { return length; }
 
 protected:
-	String *str;
-	char *buf;
-	size_t bufLen;
-	size_t length;
+	String *str;	//!< When writing to a String, the String object.
+	char *buf;		//!< When writing to a buffer, the pointer to the buffer. Not used for String.
+	size_t bufLen;	//!< When writing to a buffer, the length of the buffer in bytes. Not used for String.
+	size_t length;	//!< The current offset being written to.
 };
 
 /**
- * Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter
+ * @brief Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter
  */
 class JsonBuffer {
 public:
+	/**
+	 * @brief Construct a JsonBuffer object with no external buffer specified
+	 */
 	JsonBuffer();
+
+	/**
+	 * @brief Destructor. Destroying the object does not delete any underlying buffer!
+	 */
 	virtual ~JsonBuffer();
 
+	/**
+	 * @brief Construct a JsonBuffer with an external buffer of a given size
+	 *
+	 * @param buffer Pointer to the buffer
+	 *
+	 * @param bufferLen The length of the buffer
+	 */
 	JsonBuffer(char *buffer, size_t bufferLen);
 
+	/**
+	 * @brief Allocate the buffer using malloc/realloc
+	 *
+	 * @param len The length of the buffer in bytes
+	 *
+	 * @returns true if the allocation/reallocation was successful or false if there was not enough free memory.
+	 *
+	 * There's also a version that takes a pointer and length to use a static buffer instead of a dynamically
+	 * allocated one.
+	 */
 	bool allocate(size_t len);
 
+	/**
+	 * @brief Add a c-string to the end of the buffer
+	 *
+	 * @param data Pointer to a c-string (null terminated).
+	 */
 	bool addString(const char *data) { return addData(data, strlen(data)); }
+
+	/**
+	 * @brief Add a string to the end of the buffer
+	 *
+	 * @param data Pointer to the string bytes. Does not need to be null-terminated
+	 *
+	 * @param dataLen Length of the data in bytes. For UTF-8, this is the number of bytes, not characters!
+	 */
 	bool addData(const char *data, size_t dataLen);
 
+	/**
+	 * @brief Gets a pointer to the internal buffer
+	 *
+	 * Note: The internal buffer is not null-terminated!
+	 */
 	char *getBuffer() const { return buffer; }
+
+	/**
+	 * @brief Gets the current offset for writing
+	 */
 	size_t getOffset() const { return offset; }
+
+	/**
+	 * @brief Gets the current length of the buffer
+	 *
+	 * The buffer length is either the bufferLen passed to the constructor that takes a buffer and bufferLen
+	 * or the length allocated using allocate(len).
+	 */
 	size_t getBufferLen() const { return bufferLen; }
 
+	/**
+	 * @brief Clears the current buffer for writing.
+	 *
+	 * This only sets the offset to 0, it does not clear the bytes.
+	 */
 	void clear();
 
 protected:
-	char	*buffer;
-	size_t	bufferLen;
-	size_t	offset;
-	bool 	staticBuffers;
+	char	*buffer; //!< The buffer to to read from or write to. This is not null-terminated.
+	size_t	bufferLen; //!< The length of the buffer in bytes,
+	size_t	offset; //!< The read or write offset.
+	bool 	staticBuffers; //!< True if the buffers were passed in and should not freed or reallocated.
 
 };
 
@@ -137,57 +229,92 @@ class JsonReference;
 
 
 /**
- * API to the JsonParser
+ * @brief API to the JsonParser
  *
  * This is a memory-efficient JSON parser based on jsmn. It only keeps one copy of the data in raw format
  * and an array of tokens. You make calls to read values out.
  */
 class JsonParser : public JsonBuffer {
 public:
+	/**
+	 * @brief Construct a parser object
+	 *
+	 * This version dynamically allocates the buffer and token storage. If you want to minimize
+	 * memory allocations you can pass in a static buffer and array of tokens to use instead.
+	 */
 	JsonParser();
+
+	/**
+	 * @brief Destroy a parser object
+	 *
+	 * If the buffer was allocated dynamically it will be deleted. If you passed in a static buffer
+	 * the static buffer is not deleted.
+	 */
 	virtual ~JsonParser();
 
 	/**
-	 * Static buffers constructor
+	 * @brief Static buffers constructor
 	 */
 	JsonParser(char *buffer, size_t bufferLen, JsonParserGeneratorRK::jsmntok_t *tokens, size_t maxTokens);
 
 	/**
-	 * Optional: Allocates the specified number of tokens. You should set this larger than the expected number
+	 * @brief Preallocates a specific number of tokens
+	 *
+	 * Optional: You should set this larger than the expected number
 	 * of tokens for efficiency, but if you are not using the static allocator it will resize the
 	 * token storage space if it's too small.
 	 */
 	bool allocateTokens(size_t maxTokens);
 
 	/**
-	 * Parses the data you have added using addData() or addString().
+	 * @brief Parses the data you have added using addData() or addString().
+	 *
+	 * When parsing data split into multiple chunks as a webhook response you can call addString()
+	 * in your webhook subscription handler and call parse after each chunk. Only on the last chunk
+	 * will parse return true, and you'll know the entire reponse has been received.
 	 */
 	bool parse();
 
 	/**
-	 *
+	 * @brief Get a JsonReference object. This is used for fluent-style access to the data.
 	 */
 	JsonReference getReference() const;
 
 	/**
+	 * @brief Gets the outer JSON object token
+	 *
 	 * Typically JSON will contain an object that contains values and possibly other objects.
 	 * This method gets the token for the outer object.
+	 *
+	 * A token (JsonParserGeneratorRK::jsmntok_t) identifies a particular piece of data in the JSON
+	 * data, such as an object, array, or element within an object or array, such as a string, integer,
+	 * boolean, etc..
 	 */
 	const JsonParserGeneratorRK::jsmntok_t *getOuterObject() const;
 
 	/**
+	 * @brief Gets the outer JSON array token
+	 *
 	 * Sometimes the JSON will contain an array of values (or objects) instead of starting with
 	 * an object. This gets the outermost array.
+	 *
+	 * A token (JsonParserGeneratorRK::jsmntok_t) identifies a particular piece of data in the JSON
+	 * data, such as an object, array, or element within an object or array, such as a string, integer,
+	 * boolean, etc..
 	 */
 	const JsonParserGeneratorRK::jsmntok_t *getOuterArray() const;
 
 	/**
-	 * Gets the outer token, whether it's an array or object
+	 * @brief Gets the outer JSON object or array token
+	 *
+	 * A token (JsonParserGeneratorRK::jsmntok_t) identifies a particular piece of data in the JSON
+	 * data, such as an object, array, or element within an object or array, such as a string, integer,
+	 * boolean, etc..
 	 */
 	const JsonParserGeneratorRK::jsmntok_t *getOuterToken() const;
 
 	/**
-	 * Given a token for an JSON array in arrayContainer, gets the number of elements in the array.
+	 * @brief Given a token for an JSON array in arrayContainer, gets the number of elements in the array.
 	 *
 	 * 0 = no elements, 1 = one element, ...
 	 *
@@ -197,7 +324,16 @@ public:
 	size_t getArraySize(const JsonParserGeneratorRK::jsmntok_t *arrayContainer) const;
 
 	/**
-	 * Given an object token in container, gets the value with the specified key name.
+	 * @brief Given an object token in container, gets the value with the specified key name.
+	 *
+	 * @param container The token for the object to obtain the data from.
+	 *
+	 * @param name The name of the key to retrieve
+	 *
+	 * @param result The returned data. The value can be of type: bool, int, unsigned long, float, double, String,
+	 * or (char *, size_t&).
+	 *
+	 * @result true if the data was retrieved successfully, false if not (key not present or incompatible data type).
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
 	 * or object within an object, use getValueTokenByKey() instead.
@@ -215,7 +351,15 @@ public:
 	}
 
 	/**
-	 * Gets the value with the specified key name out of the outer object
+	 * @brief Gets the value with the specified key name out of the outer object.
+	 *
+	 * @param name The name of the key to retrieve
+	 *
+	 * @param result The returned data.
+	 *
+	 * @result true if the data was retrieved successfully, false if not (key not present or incompatible data type).
+	 *
+	 * The outer object must be a JSON object, not an array.
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
 	 * or object within an object, use getValueTokenByKey() instead.
@@ -233,7 +377,7 @@ public:
 	}
 
 	/**
-	 * Gets the key/value pair of an object by index
+	 * @brief Gets the key/value pair of an object by index
 	 *
 	 * @param container The object to look in (see getOuterKeyValueByIndex if you want to the outermost object you parsed)
 	 *
@@ -267,7 +411,7 @@ public:
 	}
 
 	/**
-	 * Gets the key/value pair of the outer object by index (0 = first, 1 = second, ...)
+	 * @brief Gets the key/value pair of the outer object by index (0 = first, 1 = second, ...)
 	 *
 	 * Normally you get a value in an object by its key, but if you want to iterate all of the keys you can
 	 * use this method.
@@ -291,7 +435,17 @@ public:
 
 
 	/**
-	 * Given an array token in arrayContainer, gets the value with the specified index.
+	 * @brief Given an array token in arrayContainer, gets the value with the specified index.
+	 *
+	 * @param arrayContainer A token for an array
+	 *
+	 * @param index The index in the array. 0 = first item, 1 = second item, ...
+	 *
+	 * @param result Filled in with the value. The value can be of type: bool, int, unsigned long, float, double, String,
+	 * or (char *, size_t&).
+	 *
+	 * @return true if the call succeeded or false if it failed. You can call this repeatedly until it returns
+	 * false to iterate the array.
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
 	 * or object within an array, use getValueTokenByIndex() instead.
@@ -309,7 +463,19 @@ public:
 	}
 
 	/**
-	 * This method is used to extract data from a 2-dimensional JSON array, an array of arrays of values.
+	 * @brief This method is used to extract data from a 2-dimensional JSON array, an array of arrays of values.
+	 *
+	 * @param arrayContainer A token for an array containing another array
+	 *
+	 * @param col The column (outer array index, 0 = first column, 1 = second column, ...)
+	 *
+	 * @param row The row (inner array index, 0 = first row, 1 = second row, ...)
+	 *
+	 * @param result Filled in with the value. The value can be of type: bool, int, unsigned long, float, double, String,
+	 * or (char *, size_t&).
+	 *
+	 * @return true if the call succeeded or false if it failed. You can call this repeatedly until it returns
+	 * false to iterate the array.
 	 *
 	 * This should only be used for things like string, numbers, booleans, etc.. If you want to get a JSON array
 	 * or object within a two-dimensional array, use getValueTokenByColRow() instead.
@@ -327,7 +493,15 @@ public:
 	}
 
 	/**
-	 * Given an object token in container, gets the token value with the specified key name.
+	 * @brief Given an object token in container, gets the token value with the specified key name.
+	 *
+	 * @param container The object token to look in.
+	 *
+	 * @param key The key to look for.
+	 *
+	 * @param value Filled in with the token for the value for key.
+	 *
+	 * @return true if the key is found or false if not.
 	 *
 	 * This can be used for objects whose keys are arrays or objects, to get the token for the container. It can
 	 * also be used for values, but normally you'd use getValueByKey() instead, which is generally more convenient.
@@ -335,7 +509,15 @@ public:
 	bool getValueTokenByKey(const JsonParserGeneratorRK::jsmntok_t *container, const char *key, const JsonParserGeneratorRK::jsmntok_t *&value) const;
 
 	/**
-	 * Given an array token in container, gets the token value with the specified index.
+	 * @brief Given an array token in container, gets the token value with the specified index.
+	 *
+	 * @param container The array token to look in.
+	 *
+	 * @param desiredIndex The index to retrieve (0 = first, 1 = second, ...).
+	 *
+	 * @param value Filled in with the token for the value for key.
+	 *
+	 * @return true if the index is valid or false if the index exceeds the size of the array.
 	 *
 	 * This can be used for arrays whose values are arrays or objects, to get the token for the container. It can
 	 * also be used for values, but normally you'd use getValueByIndex() instead, which is generally more convenient.
@@ -343,7 +525,17 @@ public:
 	bool getValueTokenByIndex(const JsonParserGeneratorRK::jsmntok_t *container, size_t desiredIndex, const JsonParserGeneratorRK::jsmntok_t *&value) const;
 
 	/**
-	 * This method is used to extract data from a 2-dimensional JSON array, an array of arrays of values.
+	 * @brief This method is used to extract data from a 2-dimensional JSON array, an array of arrays of values.
+	 *
+	 * @param container A token for an array containing another array
+	 *
+	 * @param col The column (outer array index, 0 = first column, 1 = second column, ...)
+	 *
+	 * @param row The row (inner array index, 0 = first row, 1 = second row, ...)
+	 *
+	 * @param value Filled in with the token for the value for key.
+	 *
+	 * @return true if the index row and column are valid or false if either is out of range.
 	 *
 	 * This can be used for 2-dimensional arrays whose values are arrays or objects, to get the token for the container. It can
 	 * also be used for values, but normally you'd use getValueByColRow() instead, which is generally more convenient.
@@ -352,12 +544,28 @@ public:
 
 
 	/**
-	 * Given a containing object, finds the nth token in the object
+	 * @brief Given a containing object, finds the nth token in the object. Internal use only.
+	 *
+	 * @param container The array token to look in.
+	 *
+	 * @param desiredIndex The index to retrieve (0 = first, 1 = second, ...).
+	 *
+	 * @return The token
+	 *
+	 * This is used internally. It should not be used to get the nth array value, use getValueTokenByIndex instead.
 	 */
 	const JsonParserGeneratorRK::jsmntok_t *getTokenByIndex(const JsonParserGeneratorRK::jsmntok_t *container, size_t desiredIndex) const;
 
 	/**
-	 * Given a JSON object in container, gets the key/value pair specified by index.
+	 * @brief Given a JSON object in container, gets the key/value pair specified by index. Internal use only.
+	 *
+	 * @param container The array token to look in.
+	 *
+	 * @param key Filled in with the key token for nth key value pair.
+	 *
+	 * @param value Filled in with the value token for then nth key value pair.
+	 *
+	 * @param index The index to retrieve (0 = first, 1 = second, ...).
 	 *
 	 * This is a low-level function; you will typically use getValueByIndex() or getValueByKey() instead.
 	 */
@@ -365,7 +573,13 @@ public:
 
 
 	/**
-	 * Used internally to skip over the token in obj.
+	 * @brief Used internally to skip over the token in obj.
+	 *
+	 * @param container The array token to look in.
+	 *
+	 * @param obj Object within the token, updated to the next object if true is returned
+	 *
+	 * @return true if there was a next object, false if not.
 	 *
 	 * For simple primitives and strings, this is equivalent to obj++. For objects and arrays,
 	 * however, this skips over the entire object or array, including any nested objects within
@@ -374,7 +588,7 @@ public:
 	bool skipObject(const JsonParserGeneratorRK::jsmntok_t *container, const JsonParserGeneratorRK::jsmntok_t *&obj) const;
 
 	/**
-	 * Copies the value of the token into a buffer, making it a null-terminated cstring.
+	 * @brief Copies the value of the token into a buffer, making it a null-terminated cstring.
 	 *
 	 * If the string is longer than dstLen - 1 bytes, it will be truncated and the result will
 	 * still be a valid cstring.
@@ -386,7 +600,7 @@ public:
 	void copyTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, char *dst, size_t dstLen) const;
 
 	/**
-	 * Gets a bool (boolean) value.
+	 * @brief Gets a bool (boolean) value.
 	 *
 	 * Normally you'd use getValueByKey(), getValueByIndex() or getValueByColRow() which will automatically
 	 * use this when the result parameter is a bool variable.
@@ -394,7 +608,7 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, bool &result) const;
 
 	/**
-	 * Gets an integer value.
+	 * @brief Gets an integer value.
 	 *
 	 * Normally you'd use getValueByKey(), getValueByIndex() or getValueByColRow() which will automatically
 	 * use this when the result parameter is an int variable.
@@ -402,7 +616,7 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, int &result) const;
 
 	/**
-	 * Gets an unsigned long value.
+	 * @brief Gets an unsigned long value.
 	 *
 	 * Normally you'd use getValueByKey(), getValueByIndex() or getValueByColRow() which will automatically
 	 * use this when the result parameter is an unsigned long variable.
@@ -410,7 +624,7 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, unsigned long &result) const;
 
 	/**
-	 * Gets a float (single precision floating point) value.
+	 * @brief Gets a float (single precision floating point) value.
 	 *
 	 * Normally you'd use getValueByKey(), getValueByIndex() or getValueByColRow() which will automatically
 	 * use this when the result parameter is a float variable.
@@ -418,7 +632,7 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, float &result) const;
 
 	/**
-	 * Gets a double (double precision floating point) value.
+	 * @brief Gets a double (double precision floating point) value.
 	 *
 	 * Normally you'd use getValueByKey(), getValueByIndex() or getValueByColRow() which will automatically
 	 * use this when the result parameter is a double variable.
@@ -426,7 +640,9 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, double &result) const;
 
 	/**
-	 * Gets a String value. This will automatically decode Unicode character escapes in the data and the
+	 * @brief Gets a String value into a Wiring String object.
+	 *
+	 * This will automatically decode Unicode character escapes in the data and the
 	 * returned String will contain UTF-8.
 	 *
 	 * Normally you'd use getValueByKey(), getValueByIndex() or getValueByColRow() which will automatically
@@ -435,14 +651,18 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, String &result) const;
 
 	/**
-	 * Gets a string as a cstring into the specified buffer. If the token specifies too large of a string
+	 * @brief Gets a string as a c-string into the specified buffer.
+	 *
+	 * If the token specifies too large of a string
 	 * it will be truncated. This will automatically decode Unicode character escapes in the data and the
 	 * returned string will contain UTF-8.
 	 */
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, char *str, size_t &strLen) const;
 
 	/**
-	 * Gets a string as a JsonParserString object. This is used internally by getTokenValue() overloads
+	 * @brief Gets a string as a JsonParserString object.
+	 *
+	 * This is used internally by getTokenValue() overloads
 	 * that take a String or buffer and length; you will normally not need to use this directly.
 	 *
 	 * This will automatically decode Unicode character escapes in the data and the
@@ -451,64 +671,132 @@ public:
 	bool getTokenValue(const JsonParserGeneratorRK::jsmntok_t *token, JsonParserString &str) const;
 
 	/**
-	 * Converts a token (object, array, string, or primitive) back into JSON
+	 * @brief Converts a token (object, array, string, or primitive) back into JSON in a Wiring String.
+	 *
+	 * @param token The token to convert back to a string
+	 *
+	 * @param result Filled in with the string. Any previous contents in the string are cleared first.
 	 */
 	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, String &result) const;
 
 	/**
-	 * Converts a token (object, array, string, or primitive) back into JSON
+	 * @brief Converts a token (object, array, string, or primitive) back into JSON in a buffer.
+	 *
+	 * @param token The token to convert back to a string
+	 *
+	 * @param str The buffer to be written to
+	 *
+	 * @param strLen The length of the buffer on entry, set to the number of bytes written on exit.
 	 */
 	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, char *str, size_t &strLen) const;
 
 	/**
-	 * Gets a token as a JSON string. This overload is typically used internally, normally you'd use
+	 * @brief Gets a token as a JSON string.
+	 *
+	 * @param token The token to convert back to a string
+	 *
+	 * @param str The JsonParserString object to write to
+	 *
+	 * This overload is typically used internally, normally you'd use
 	 * the version that takes a String& or char *, size_t.
 	 */
 	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, JsonParserString &str) const;
 
 	/**
-	 * Given a Unicode UTF-16 code point, converts it to UTF-8 and appends it to str.
+	 * @brief Given a Unicode UTF-16 code point, converts it to UTF-8 and appends it to str.
 	 */
 	static void appendUtf8(uint16_t unicode, JsonParserString &str);
 
 
 protected:
-	JsonParserGeneratorRK::jsmntok_t *tokens;
-	JsonParserGeneratorRK::jsmntok_t *tokensEnd;
-	size_t	maxTokens;
-	JsonParserGeneratorRK::jsmn_parser parser;
+	JsonParserGeneratorRK::jsmntok_t *tokens; //!< Array of tokens after parsing.
+	JsonParserGeneratorRK::jsmntok_t *tokensEnd; //!< Pointer into tokens, points after last used token.
+	size_t	maxTokens; //!< Number of tokens that can be stored in tokens.
+	JsonParserGeneratorRK::jsmn_parser parser;//!< The JSMN parser object.
 };
 
 /**
- * Creates a JsonParser with a static buffer. You normally use this when you're creating a parser
- * as a global variable.
+ * @brief Creates a JsonParser with a static buffer.
+ *
+ * You normally use this when you're creating a parser as a global variable. For small data (under around
+ * 256 bytes so) you can also allocate one on the stack.
+ *
+ * @param BUFFER_SIZE The maximum size of the data to be parsed, in bytes. If you are parsing a webhook response
+ * split into parts, this is the total size of all parts.
+ *
+ * @param MAX_TOKENS The maximum number of tokens you expect. Each object has a token and two for each key/value pair.
+ * Each array is a token and one for each element in the array.
  */
 template <size_t BUFFER_SIZE, size_t MAX_TOKENS>
 class JsonParserStatic : public JsonParser {
 public:
+	/**
+	 * @brief Construct a JsonParser using a static buffer and static maximum number of tokens.
+	 */
 	explicit JsonParserStatic() : JsonParser(staticBuffer, BUFFER_SIZE, staticTokens, MAX_TOKENS) {};
 
 private:
-	char staticBuffer[BUFFER_SIZE];
-	JsonParserGeneratorRK::jsmntok_t staticTokens[MAX_TOKENS];
+	char staticBuffer[BUFFER_SIZE];//!< The static buffer to hold the data
+	JsonParserGeneratorRK::jsmntok_t staticTokens[MAX_TOKENS]; //!< The static buffer to hold the tokens.
 };
 
 /**
- * Class for containing a reference to a JSON object, array, or value token
- *
- * This provides a fluent-style API for easily traversing a tree of JSON objects to find a value
+ * @brief This class provides a fluent-style API for easily traversing a tree of JSON objects to find a value
  */
 class JsonReference {
 public:
+	/**
+	 * @brief Constructs an object. Normally you use the JsonParser getReference() method to get one of these
+	 * instead of constructing one.
+	 *
+	 * @param parser The JsonParser object you're traversing
+	 */
 	JsonReference(const JsonParser *parser);
+
+	/**
+	 * @brief Destructor. This does not affect the lifecycle of the JsonParser.
+	 */
 	virtual ~JsonReference();
 
+	/**
+	 * @brief Constructs are JsonReference for a specific token within a JsonParser
+	 */
 	JsonReference(const JsonParser *parser, const JsonParserGeneratorRK::jsmntok_t *token);
 
+	/**
+	 * @brief For JsonReference that refers to a JSON object, gets a new JsonReference to a value with the specified key name.
+	 *
+	 * @param name of the key to look for.
+	 *
+	 * @return A JsonReference to the value for this key.
+	 */
 	JsonReference key(const char *name) const;
+
+	/**
+	 * @brief For a JsonReference that refers to a JSON array, gets a new JsonReference to a value in the array by index.
+	 *
+	 * @param index The index to retrieve (0 = first item, 1 = second item, ...).
+	 *
+	 * @return A JsonReference to the value for this index.
+	 */
 	JsonReference index(size_t index) const ;
+
+	/**
+	 * @brief For a JsonReference that refers to a JSON array, gets the size of the array.
+	 *
+	 * @return 0 = an empty array, 1 = one element, ...
+	 */
 	size_t size() const;
 
+	/**
+	 * @brief Get a value of the specified type for a given value for a specified key, or index for an array.
+	 *
+	 * @param result Filled in with the value. The value can be of type: bool, int, unsigned long, float, double, String,
+	 * or (char *, size_t&).
+	 *
+	 * There are also type-specific versions like valueBool that return the value, instead of having to pass an object
+	 * to hold the value, as in this call.
+	 */
 	template<class T>
 	bool value(T &result) const {
 		if (token && parser->getTokenValue(token, result)) {
@@ -519,11 +807,46 @@ public:
 		}
 	}
 
+	/**
+	 * @brief Returns a boolean (bool) value for an object value for key, or array index
+	 *
+	 * @param defaultValue Optional value to use if the key or array index is not found. Default: false.
+	 */
 	bool valueBool(bool defaultValue = false) const;
+
+	/**
+	 * @brief Returns a integer (int) value for an object value for key, or array index
+	 *
+	 * @param defaultValue Optional value to use if the key or array index is not found. Default: 0.
+	 */
 	int valueInt(int defaultValue = 0) const;
+
+	/**
+	 * @brief Returns a unsigned long integer for an object value for key, or array index
+	 *
+	 * @param defaultValue Optional value to use if the key or array index is not found. Default: 0.
+	 */
 	unsigned long valueUnsignedLong(unsigned long defaultValue = 0) const;
-	float valueFloat(float defaultValue = 0) const;
-	double valueDouble(double defaultValue = 0) const;
+
+	/**
+	 * @brief Returns a float value for an object value for key, or array index
+	 *
+	 * @param defaultValue Optional value to use if the key or array index is not found. Default: 0.0.
+	 */
+	float valueFloat(float defaultValue = 0.0) const;
+
+	/**
+	 * @brief Returns a double value for an object value for key, or array index
+	 *
+	 * @param defaultValue Optional value to use if the key or array index is not found. Default: 0.0.
+	 */
+	double valueDouble(double defaultValue = 0.0) const;
+
+	/**
+	 * @brief Returns a String value for an object value for key, or array index
+	 *
+	 * @return The string value, or an empty string if the key or array index is not found.
+	 */
 	String valueString() const;
 
 private:
@@ -531,22 +854,51 @@ private:
 	const JsonParserGeneratorRK::jsmntok_t *token;
 };
 
+/**
+ * @brief Used internally by JsonWriter
+ */
 typedef struct {
-	bool isFirst;
-	char terminator;
+	bool isFirst;		//!< True if this the first element in this object or array and doesn't need a comma before it
+	char terminator;	//!< The character that will terminate the object or array when ended
 } JsonWriterContext;
 
 /**
- * Class for building a JSON string
+ * @brief Class for building a JSON string
  */
 class JsonWriter : public JsonBuffer {
 public:
+	/**
+	 * @brief Construct a JsonWriter with a dynamically allocated buffer
+	 *
+	 * The buffer will be resized as necessary but you can improve efficiency by using the allocate() method
+	 * of JsonBuffer to pre-allocate space rather than have to incrementally make it bigger as it's written to.
+	 *
+	 * Use getBuffer() to get the pointer to the buffer and getOffset() to get the buffer pointer and size. The
+	 * buffer is not null-terminated!
+	 */
 	JsonWriter();
+
+	/**
+	 * @brief Destroy the object. If the buffer was dynamically allocated it will be freed.
+	 *
+	 * If the buffer was passed in using the buffer, bufferLen constructor the buffer is not freed by this call
+	 * as it's likely statically allocated.
+	 */
 	virtual ~JsonWriter();
 
+	/**
+	 * @brief Construct a JsonWriter to write to a static buffer
+	 *
+	 * @param buffer Pointer to the buffer
+	 *
+	 * @param bufferLen Length of the buffer in bytes
+	 *
+	 */
 	JsonWriter(char *buffer, size_t bufferLen);
 
 	/**
+	 * @brief Reset the writer, clearing all data
+	 *
 	 * You do not need to call init() as it's called from the two constructors. You can call it again
 	 * if you want to reset the writer and reuse it, such as when you use JsonWriterStatic in a global
 	 * variable.
@@ -554,14 +906,22 @@ public:
 	void init();
 
 	/**
-	 *
+	 * @brief Start a new JSON object. Make sure you finish it with finishObjectOrArray()
 	 */
 	bool startObject() { return startObjectOrArray('{', '}'); };
+
+	/**
+	 * @brief Start a new JSON array. Make sure you finish it with finishObjectOrArray()
+	 */
 	bool startArray() { return startObjectOrArray('[', ']'); };
+
+	/**
+	 * @brief Finsh an object or array started with startObject() or startArray()
+	 */
 	void finishObjectOrArray();
 
 	/**
-	 * Inserts a boolean value ("true" or "false").
+	 * @brief Inserts a boolean value ("true" or "false").
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
 	 * as those functions take care of inserting the separtators between items.
@@ -569,7 +929,7 @@ public:
 	void insertValue(bool value);
 
 	/**
-	 * Inserts an integer value.
+	 * @brief Inserts an integer value.
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
 	 * as those functions take care of inserting the separators between items.
@@ -577,7 +937,7 @@ public:
 	void insertValue(int value) { insertsprintf("%d", value); }
 
 	/**
-	 * Inserts an unsigned integer value.
+	 * @brief Inserts an unsigned integer value.
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
 	 * as those functions take care of inserting the separators between items.
@@ -585,7 +945,7 @@ public:
 	void insertValue(unsigned int value) { insertsprintf("%u", value); }
 
 	/**
-	 * Inserts a long integer value.
+	 * @brief Inserts a long integer value.
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
 	 * as those functions take care of inserting the separators between items.
@@ -593,7 +953,7 @@ public:
 	void insertValue(long value) { insertsprintf("%ld", value); }
 
 	/**
-	 * Inserts an unsigned long integer value.
+	 * @brief Inserts an unsigned long integer value.
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
 	 * as those functions take care of inserting the separators between items.
@@ -601,7 +961,7 @@ public:
 	void insertValue(unsigned long value) { insertsprintf("%lu", value); }
 
 	/**
-	 * Inserts a floating point value.
+	 * @brief Inserts a floating point value.
 	 *
 	 * Use setFloatPlaces() to set the number of decimal places to include.
 	 *
@@ -611,7 +971,7 @@ public:
 	void insertValue(float value);
 
 	/**
-	 * Inserts a floating point double value.
+	 * @brief Inserts a floating point double value.
 	 *
 	 * Use setFloatPlaces() to set the number of decimal places to include.
 	 *
@@ -621,7 +981,7 @@ public:
 	void insertValue(double value);
 
 	/**
-	 * Inserts a quoted string value. This escapes special characters and encodes utf-8.
+	 * @brief Inserts a quoted string value. This escapes special characters and encodes utf-8.
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
 	 * as those functions take care of inserting the separtators between items.
@@ -629,7 +989,9 @@ public:
 	void insertValue(const char *value) { insertString(value, true); }
 
 	/**
-	 * Inserts a quoted string value. This escapes special characters and encodes utf-8.
+	 * @brief Inserts a quoted string value.
+	 *
+	 * This escapes special characters and encodes utf-8.
 	 * See also the version that takes a plain const char *.
 	 *
 	 * You would normally use insertKeyValue() or insertArrayValue() instead of calling this directly
@@ -638,17 +1000,21 @@ public:
 	void insertValue(const String &value) { insertString(value.c_str(), true); }
 
 	/**
-	 * Inserts a new key and empty object. You must close the object using finishObjectOrArray()!
+	 * @brief Inserts a new key and empty object. You must close the object using finishObjectOrArray()!
+
+	 * @param key the key name to insert
 	 */
 	void insertKeyObject(const char *key);
 
 	/**
-	 * Inserts a new key and empty array. You must close the object using finishObjectOrArray()!
+	 * @brief Inserts a new key and empty array. You must close the object using finishObjectOrArray()!
+	 *
+	 * @param key the key name to insert
 	 */
 	void insertKeyArray(const char *key);
 
 	/**
-	 * Inserts a key/value pair into an object.
+	 * @brief Inserts a key/value pair into an object.
 	 *
 	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
 	 * for example: bool, int, float, double, const char *.
@@ -662,7 +1028,7 @@ public:
 	}
 
 	/**
-	 * Inserts a value into an array.
+	 * @brief Inserts a value into an array.
 	 *
 	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
 	 * for example: bool, int, float, double, const char *.
@@ -680,34 +1046,46 @@ public:
 	bool isTruncated() const { return truncated; }
 
 	/**
-	 * Sets the number of digits for formatting float and double values. Set it to -1 to use the
-	 * default for snprintf.
+	 * @brief Sets the number of digits for formatting float and double values.
+	 *
+	 * @param floatPlaces The number of decimal places for float and double.
+	 * Set it to -1 to use the default for snprintf. -1 is the default value if you don't call setFloatPlaces.
 	 */
 	void setFloatPlaces(int floatPlaces) { this->floatPlaces = floatPlaces; }
 
 	/**
-	 * Check to see if a separator needs to be inserted. You normally don't need to use this
+	 * @brief Check to see if a separator needs to be inserted. Used internally.
+	 *
+	 * You normally don't need to use this
 	 * as it's called by insertKeyValue() and insertArrayValue().
 	 */
 	void insertCheckSeparator();
 
 	/**
+	 * @brief Used internally to start an object or array
+	 *
 	 * Used internally; you should use startObject() or startArray() instead.
 	 * Make sure you finish any started object or array using finishObjectOrArray().
 	 */
 	bool startObjectOrArray(char startChar, char endChar);
 
 	/**
+	 * @brief Used internally to insert a character
+	 *
 	 * Used internally. You should use insertKeyValue() or insertArrayValue() with a string instead.
 	 */
 	void insertChar(char ch);
 
 	/**
+	 * @brief Used internally to insert a string, quoted or not.
+	 *
 	 * Used internally. You should use insertKeyValue() or insertArrayValue() with a string instead.
 	 */
 	void insertString(const char *s, bool quoted = false);
 
 	/**
+	 * @brief Used internally to insert using snprintf formatting.
+	 *
 	 * Used internally. You should use insertKeyValue() or insertArrayValue() with a string, float, or
 	 * double instead.
 	 *
@@ -716,6 +1094,8 @@ public:
 	void insertsprintf(const char *fmt, ...);
 
 	/**
+	 * @brief Used internally to insert using snprintf formatting with a va_list.
+	 *
 	 * Used internally. You should use insertKeyValue() or insertArrayValue() with a string, float, or
 	 * double instead.
 	 *
@@ -725,21 +1105,36 @@ public:
 
 	/**
 	 * This constant is the maximum number of nested objects that are supported; the actual number is
-	 * one less than this so when set to 5 you can have four objects nested in each other.
+	 * one less than this so when set to 9 you can have eight objects nested in each other.
+	 *
+	 * Overhead is 8 bytes per nested context, so 9 elements is 72 bytes.
 	 */
-	static const size_t MAX_NESTED_CONTEXT = 5;
+	static const size_t MAX_NESTED_CONTEXT = 9;
 
 protected:
-	size_t contextIndex;
-	JsonWriterContext context[MAX_NESTED_CONTEXT];
-	bool truncated;
-	int floatPlaces;
+	size_t contextIndex;							//!< Index into the context for the current level of nesting
+	JsonWriterContext context[MAX_NESTED_CONTEXT]; 	//!< Structure for managing nested objects
+	bool truncated; 								//!< true if data was added that didn't fit and was truncated
+	int floatPlaces; 								//!< default number of places to display for floating point numbers (default is -1, the default for sprintf)
 };
 
 
 /**
- * Creates a JsonWriter with a statically allocated buffer. You typically do this when you want
- * to create a buffer as a global variable.
+ * @brief Creates a JsonWriter with a statically allocated buffer.
+ *
+ * You typically do this when you want to create a buffer as a global variable.
+ *
+ * Example:
+ *
+ * ```
+ * JsonWriterStatic<256> jsonWriter;
+ * ```
+ *
+ * Creates a 256 byte buffer to write JSON to. You'd normally do this as a global variable, but for smaller
+ * buffers (256 and smaller should be fine) in the loop thread, you can allocate one on the stack as a local
+ * variable.
+ *
+ * @param BUFFER_SIZE The size of the buffer to reserve.
  */
 template <size_t BUFFER_SIZE>
 class JsonWriterStatic : public JsonWriter {
@@ -747,33 +1142,65 @@ public:
 	explicit JsonWriterStatic() : JsonWriter(staticBuffer, BUFFER_SIZE) {};
 
 private:
-	char staticBuffer[BUFFER_SIZE];
+	char staticBuffer[BUFFER_SIZE]; //!< static buffer to write to
 };
 
+/**
+ * @brief Class for creating a JSON object with JsonWriter
+ *
+ * When you create an object, you must call startObject() to start and finishObjectOrArray() to complete it.
+ *
+ * This class is instantiated on the stack to automatically start and finish for you.
+ */
 class JsonWriterAutoObject {
 public:
+	/**
+	 * @brief Start a new object
+	 *
+	 * @param jw The JsonWriter object to insert the object into
+	 */
 	JsonWriterAutoObject(JsonWriter *jw) : jw(jw) {
 		jw->startObject();
 	}
+
+	/**
+	 * @brief End the object
+	 */
 	~JsonWriterAutoObject() {
 		jw->finishObjectOrArray();
 	}
 
 protected:
-	JsonWriter *jw;
+	JsonWriter *jw; //!< JsonWriter to write to
 };
 
+/**
+ * @brief Class for creating a JSON array with JsonWriter
+ *
+ * When you create an object, you must call startArray() to start and finishObjectOrArray() to complete it.
+ *
+ * This class is instantiated on the stack to automatically start and finish for you.
+ */
 class JsonWriterAutoArray {
 public:
+	/**
+	 * @brief Start a new array
+	 *
+	 * @param jw The JsonWriter object to insert the array into
+	 */
 	JsonWriterAutoArray(JsonWriter *jw) : jw(jw) {
 		jw->startArray();
 	}
+
+	/**
+	 * @brief End the array
+	 */
 	~JsonWriterAutoArray() {
 		jw->finishObjectOrArray();
 	}
 
 protected:
-	JsonWriter *jw;
+	JsonWriter *jw; //!< JsonWriter to write to
 };
 
 #endif /* __JSONPARSERGENERATORRK_H */

@@ -10,13 +10,15 @@ I also added a JSON generator that's nearly as efficient as using sprintf, but m
 
 The parser and generator are separated internally so if you only need one or the other the linker will remove the unnecessary code automatically to save space.
 
+The [full API documentation can be found here](http://rickkas7.github.io/JsonParserGeneratorRK/).
+
 ## JSON Parser
 
 The parser can be used in many situations, but it's particularly well-suited for handing responses from webhooks, including multi-part responses. 
 
 The parser can be used in two different ways: static allocation, where almost all of the memory location is done in advance, or dynamically.
 
-To do it dynamically, just construct the JsonParser object as a global or local variable:
+To do it dynamically, just construct the [JsonParser](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_parser.html) object as a global or local variable:
 
 ```
 JsonParser parser;
@@ -24,13 +26,13 @@ JsonParser parser;
 
 To do it statically, you need to guess the maximum size of the data you want to receive and the maximum number of tokens it will have. Each object is one token, plus two tokens for each key/value pair. Each array is one token, plus one token for each value in the array.
 
-This example creates a static parser to parse up to 1024 bytes of data and 50 tokens:
+This [JsonParserStatic](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_parser_static.html) example creates a static parser to parse up to 1024 bytes of data and 50 tokens:
 
 ```
 JsonParserStatic<1024, 50> parser;
 ```
 
-You then typically add the data to parse using the addData or addString method. If you're getting the data from a subscribe handler, you'll probably use addString.
+You then typically add the data to parse using the [addData](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_buffer.html#a760cb5be42ed2d2ca9306b1109e76af3) or [addString](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_buffer.html#a61bf30ac6e1bd460f1e809d02a7d5ba4) method. If you're getting the data from a subscribe handler, you'll probably use addString.
 
 ```
 parser.addString(data);
@@ -38,7 +40,7 @@ parser.addString(data);
 
 If you have a pointer and length, the addData method can be used instead.
 
-Then, once all of the data has been added, call parse. This is handy for webhooks where you may get a multipart response. Example 3 demonstrates this:
+Then, once all of the data has been added, call [parse](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_parser.html#ad528213e8600cbad4d85910b62fc033a). This is handy for webhooks where you may get a multipart response. Example 3 demonstrates this:
 
 ```
 void subscriptionHandler(const char *event, const char *data) {
@@ -78,7 +80,7 @@ Say you have this object:
 }
 ```
 
-You could read the value of t1 by using this code:
+You could read the value of t1 by using [getOuterValueByKey](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_parser.html#a38858994342cd2735b716b117bf8afdf) and this code:
 
 ```
 String strValue;
@@ -142,15 +144,17 @@ If you have a complicated JSON file to decode, using the [JSON Parser Tool](http
 
 The JSON Generator is used to build valid JSON strings. While you can build JSON using sprintf, the JSON generator is able to double-quote escape strings, and escape double quotes within strings. It can also generate correct JSON unicode characters.
 
-The most common use is to construct a static buffer to hold the JSON data for Particle.publish. Since this data is limited to 256 bytes, this is a reasonable approach:
+The most common use is to construct a static buffer to hold the JSON data for Particle.publish. Since this data is limited to 256 bytes, this is a reasonable approach using [JsonWriterStatic](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer_static.html):
 
 ```
 JsonWriterStatic<256> jw;
 ```
 
+You can also dynamically allocate a buffer using the plain [JsonWriter](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer.html).
+
 The JsonWriter handles nested objects and arrays, but does so without creating temporary copies of the objects. Because of this, it's necessary to use startObject(), startArray(), and finishObjectOrArray() so the objects are balanced properly.
 
-To make this easier, the JsonWriterAutoObject can be instantiated on the stack. When the object goes out of scope, it will automatically close the object. You use it like this:
+To make this easier, the [JsonWriterAutoObject](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer_auto_object.html) can be instantiated on the stack. When the object goes out of scope, it will automatically close the object. You use it like this:
 
 ```
 	{
@@ -168,6 +172,8 @@ This will output the JSON data:
 ```
 {\"a\":true,\"b\":1234,\"c\":\"test\"}
 ```
+
+If you are sending float or double values you may want to limit the number of decimal places to send. This is done using [setFloatPlaces](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer.html#aecd4d984a49fe59b0c4d892fe6d1e791).
 
 ## Examples
 
