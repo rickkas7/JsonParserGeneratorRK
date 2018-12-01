@@ -11,7 +11,7 @@
     ],
     "license": "Apache Version 2.0",
     "dependencies": {
-        "@rickkas7/particle-builder": "^0.0.2"
+        "@rickkas7/particle-builder": "0.0.3"
     },
     "engines": {
         "node": ">=4.3.2"
