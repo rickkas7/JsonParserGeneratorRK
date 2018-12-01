@@ -58,12 +58,18 @@ int main(int argc, char *argv[]) {
 		assert(jp.getValueByKey(jp.getOuterObject(), "range", s));
 		assert(s == "Sheet1!A2:B7");
 
+		assert(jp.getReference().key("range").valueString() == "Sheet1!A2:B7");
+
 		assert(jp.getValueByKey(jp.getOuterObject(), "majorDimension", s));
 		assert(s == "COLUMNS");
+
+		assert(jp.getReference().key("majorDimension").valueString() == "COLUMNS");
 
 		const JsonParserGeneratorRK::jsmntok_t *values;
 		assert(jp.getValueTokenByKey(jp.getOuterObject(), "values", values));
 		assert(jp.getArraySize(values) == 2);
+
+		assert(jp.getReference().key("values").size() == 2);
 
 		const JsonParserGeneratorRK::jsmntok_t *col[2];
 		assert(jp.getValueTokenByIndex(values, 0, col[0]));
@@ -72,30 +78,48 @@ int main(int argc, char *argv[]) {
 		assert(jp.getValueTokenByIndex(values, 1, col[1]));
 		assert(jp.getArraySize(col[1]) == 4);
 
+		assert(jp.getReference().key("values").index(0).size() == 4);
+
 		assert(jp.getValueByIndex(col[0], 0, s));
 		assert(s == "Albert Albrecht");
+
+		assert(jp.getReference().key("values").index(0).index(0).valueString() == "Albert Albrecht");
 
 		assert(jp.getValueByIndex(col[0], 1, s));
 		assert(s == "Bob Billings");
 
+		assert(jp.getReference().key("values").index(0).index(1).valueString() == "Bob Billings");
+
 		assert(jp.getValueByIndex(col[0], 2, s));
 		assert(s == "Charlie Chaplin");
 
+		assert(jp.getReference().key("values").index(0).index(2).valueString() == "Charlie Chaplin");
+
 		assert(jp.getValueByIndex(col[0], 3, s));
 		assert(s == "Dave Dink");
+
+		assert(jp.getReference().key("values").index(0).index(3).valueString() == "Dave Dink");
 
 		int intValue;
 		assert(jp.getValueByIndex(col[1], 0, intValue));
 		assert(intValue == 1234);
 
+		assert(jp.getReference().key("values").index(1).index(0).valueInt() == 1234);
+
 		assert(jp.getValueByIndex(col[1], 1, intValue));
 		assert(intValue == 2234);
+
+		assert(jp.getReference().key("values").index(1).index(1).valueInt() == 2234);
 
 		assert(jp.getValueByIndex(col[1], 2, intValue));
 		assert(intValue == 3234);
 
+		assert(jp.getReference().key("values").index(1).index(2).valueInt() == 3234);
+
 		assert(jp.getValueByIndex(col[1], 3, intValue));
 		assert(intValue == 4234);
+
+		assert(jp.getReference().key("values").index(1).index(3).valueInt() == 4234);
 
 		//
 
