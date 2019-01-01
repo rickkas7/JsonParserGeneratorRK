@@ -737,6 +737,24 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// Writer test - null termination test
+	{
+		char buf[256];
+		memset(buf, 'x', sizeof(buf));
+		JsonWriter jw(buf, sizeof(buf));
+
+		jw.startObject();
+
+		jw.insertKeyValue("a", true);
+		jw.insertKeyValue("b", 1234);
+		jw.insertKeyValue("c", "test");
+
+		jw.finishObjectOrArray();
+
+		assertJsonWriterBuffer(jw, "{\"a\":true,\"b\":1234,\"c\":\"test\"}");
+
+	}
+
 	// Writer test - nested
 	{
 		JsonWriterStatic<256> jw;
@@ -757,6 +775,28 @@ int main(int argc, char *argv[]) {
 		jw.finishObjectOrArray();
 
 		assertJsonWriterBuffer(jw, "{\"a\":[123,456,789],\"b\":{\"ba\":true,\"bb\":1234}}");
+
+	}
+
+	// Writer test - array of objects
+	{
+		JsonWriterStatic<256> jw;
+
+		jw.startArray();
+
+		for(int ii = 0; ii < 5; ii++) {
+			jw.insertCheckSeparator();
+			jw.startObject();
+			jw.insertKeyValue("ii", ii);
+
+			jw.finishObjectOrArray();
+		}
+
+		jw.finishObjectOrArray();
+
+		// printf("'%s'\n", jw.getBuffer());
+
+		assertJsonWriterBuffer(jw, "[{\"ii\":0},{\"ii\":1},{\"ii\":2},{\"ii\":3},{\"ii\":4}]");
 
 	}
 

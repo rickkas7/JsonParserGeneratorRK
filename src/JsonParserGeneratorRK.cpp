@@ -674,6 +674,13 @@ void JsonWriter::finishObjectOrArray() {
 		}
 		contextIndex--;
 	}
+	// Make sure buffer is null terminated
+	if (offset < bufferLen) {
+		buffer[offset] = 0;
+	}
+	else {
+		buffer[bufferLen - 1] = 0;
+	}
 }
 
 
