@@ -244,3 +244,13 @@ make check
 ```
 
 The test code is also a reference of various ways you can call the API.
+
+## Version History
+
+### 0.0.7 (2019-08-30)
+
+Fixed a bug in the 3-subscription example. The check for the part number should use strrchr, not strchr, because it needs to 
+find the last slash before the part number for webhook multi-part responses.
+
+
+

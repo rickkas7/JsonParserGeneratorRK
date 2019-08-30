@@ -25,7 +25,7 @@ void loop() {
 void subscriptionHandler(const char *event, const char *data) {
 	int responseIndex = 0;
 
-	const char *slashOffset = strchr(event, '/');
+	const char *slashOffset = strrchr(event, '/');
 	if (slashOffset) {
 		responseIndex = atoi(slashOffset + 1);
 	}

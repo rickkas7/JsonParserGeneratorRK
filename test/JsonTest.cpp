@@ -648,6 +648,48 @@ int main(int argc, char *argv[]) {
 
 		}
 
+		{
+			// {"DID":"0000111122223333395abcd","NOM":"T","BV":"3.8","SOC":"3","PWR":"F","CHG":"T"}
+			JsonParserStatic<256, 14> jp;
+			String s;
+
+			char *data = readTestData("test2g.json");
+
+			jp.addString(data);
+			free(data);
+
+			bool bResult = jp.parse();
+			assert(bResult);
+
+			bResult = jp.getOuterValueByKey("DID", s);
+			assert(bResult);
+			assert(s == "0000111122223333395abcd");
+
+
+			bResult = jp.getOuterValueByKey("NOM", s);
+			assert(bResult);
+			assert(s == "T");
+
+			float f;
+			bResult = jp.getOuterValueByKey("BV", f);
+			assert(bResult);
+			assert(f > 3.7 && f < 3.9);
+
+			int i;
+			bResult = jp.getOuterValueByKey("SOC", i);
+			assert(bResult);
+			assert(i == 3);
+
+			bResult = jp.getOuterValueByKey("PWR", s);
+			assert(bResult);
+			assert(s == "F");
+
+			bResult = jp.getOuterValueByKey("CHG", s);
+			assert(bResult);
+			assert(s == "T");
+
+		}
+
 	}
 
 	// Writer test, unallocated buffer
