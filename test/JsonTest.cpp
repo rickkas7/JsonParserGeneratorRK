@@ -1,6 +1,8 @@
 #include "Particle.h"
 #include "JsonParserGeneratorRK.h"
 
+void printTokens(JsonParser &jp);
+void printToken(JsonParser &jp, const JsonParserGeneratorRK::jsmntok_t *tok);
 void printJson(JsonParser &jp);
 
 char *readTestData(const char *filename) {
@@ -24,6 +26,23 @@ char *readTestData(const char *filename) {
 
 	return data;
 }
+
+void _assertJsonParserBuffer(JsonParser &jp, const char *expected, size_t line) {
+	char *actual = (char *) malloc(jp.getOffset() + 1);
+	strncpy(actual, jp.getBuffer(), jp.getOffset());
+	actual[jp.getOffset()] = 0;
+
+	size_t expectedLen = strlen(expected);
+	if (expectedLen != jp.getOffset() || strcmp(actual, expected) != 0) {
+		printf("line %lu: expectedLen=%lu actualLen=%lu\n", line, expectedLen, jp.getOffset());
+		printf("expected: %s\n", expected);
+		printf("actual:   %s\n", actual);
+		assert(false);
+	}
+	free(actual);
+}
+#define assertJsonParserBuffer(jp, expected) _assertJsonParserBuffer(jp, expected, __LINE__)
+
 
 void _assertJsonWriterBuffer(JsonWriter &jw, const char *expected, size_t line) {
 	char *actual = (char *) malloc(jw.getOffset() + 1);
@@ -757,7 +776,7 @@ int main(int argc, char *argv[]) {
 
 		jw.finishObjectOrArray();
 
-		// printf("'%s'\n", jw.getBuffer());
+		//printf("'%s'\n", jw.getBuffer());
 
 		assertJsonWriterBuffer(jw, "[true,1234,\"test\"]");
 
@@ -820,14 +839,15 @@ int main(int argc, char *argv[]) {
 
 	}
 
-	// Writer test - array of objects
+	// Writer test - array of objects - low level API
 	{
 		JsonWriterStatic<256> jw;
 
 		jw.startArray();
 
 		for(int ii = 0; ii < 5; ii++) {
-			jw.insertCheckSeparator();
+			// This used to be necessary, but now startObject takes care of this automatically
+			// jw.insertCheckSeparator();
 			jw.startObject();
 			jw.insertKeyValue("ii", ii);
 
@@ -860,7 +880,866 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// Modifier test - make string longer
+	{
+		JsonParserStatic<512, 32> jp;
+
+		char *data2b = readTestData("test2b.json");
+		//printf("%s", data2b);
+
+		jp.addData(data2b, strlen(data2b));
+		free(data2b);
+
+		jp.parse();
+
+		// printTokens(jp);
+		const JsonParserGeneratorRK::jsmntok_t *key, *value;
+
+		bool bResult = jp.getValueTokenByKey(jp.getOuterToken(), "t1", value);
+		assert(bResult);
+
+		JsonModifier mod(jp);
+		bResult = mod.startModify(value);
+		assert(bResult);
+
+		mod.insertString("this is a test");
+		mod.finish();
+
+		// printf("after modify\n");
+		// printTokens(jp);
+
+		String s;
+		int intValue;
+		float floatValue;
+		double doubleValue;
+		bool boolValue;
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 0));
+		//printf("key: start=%d end=%d\n", key->start, key->end);
+		//printf("value: start=%d end=%d\n", value->start, value->end);
+		assert(key->start == 5);
+		assert(key->end == 7);
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t1");
+
+		assert(value->start == 10);
+		assert(value->end == 24);
+		assert(jp.getTokenValue(value, s));
+		assert(s == "this is a test");
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 1));
+		assert(jp.getTokenValue(value, intValue));
+		assert(intValue == 1234);
+
+		assert(jp.getTokenValue(key, s));
+		assert(s== "t2");
+
+		assert(jp.getValueByKey(jp.getOuterObject(), "t2", intValue));
+		assert(intValue == 1234);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 2));
+		assert(jp.getTokenValue(value, floatValue));
+		assert(floatValue == 1234.5);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t3", value));
+		assert(jp.getTokenValue(value, floatValue));
+		assert(floatValue == 1234.5);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 3));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t4");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t4", value));
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 4));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t5");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(!boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 6));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t7");
+
+		assert(jp.getTokenValue(value, s));
+		assert(s == "\"quoted\"");
+	}
+
+
+	// Modifier test - make string shorter
+	{
+		JsonParserStatic<512, 32> jp;
+
+		char *data2b = readTestData("test2b.json");
+		//printf("%s", data2b);
+
+		jp.addData(data2b, strlen(data2b));
+		free(data2b);
+
+		jp.parse();
+
+		// printTokens(jp);
+		const JsonParserGeneratorRK::jsmntok_t *key, *value;
+
+		bool bResult = jp.getValueTokenByKey(jp.getOuterToken(), "t1", value);
+		assert(bResult);
+
+		JsonModifier mod(jp);
+		bResult = mod.startModify(value);
+		assert(bResult);
+
+		mod.insertString("x");
+		mod.finish();
+
+		// printf("after modify\n");
+		// printTokens(jp);
+
+		String s;
+		int intValue;
+		float floatValue;
+		double doubleValue;
+		bool boolValue;
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 0));
+		//printf("key: start=%d end=%d\n", key->start, key->end);
+		//printf("value: start=%d end=%d\n", value->start, value->end);
+		assert(key->start == 5);
+		assert(key->end == 7);
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t1");
+
+		assert(value->start == 10);
+		assert(value->end == 11);
+		assert(jp.getTokenValue(value, s));
+		assert(s == "x");
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 1));
+		assert(jp.getTokenValue(value, intValue));
+		assert(intValue == 1234);
+
+		assert(jp.getTokenValue(key, s));
+		assert(s== "t2");
+
+		assert(jp.getValueByKey(jp.getOuterObject(), "t2", intValue));
+		assert(intValue == 1234);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 2));
+		assert(jp.getTokenValue(value, floatValue));
+		assert(floatValue == 1234.5);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t3", value));
+		assert(jp.getTokenValue(value, floatValue));
+		assert(floatValue == 1234.5);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 3));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t4");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t4", value));
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 4));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t5");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(!boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 6));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t7");
+
+		assert(jp.getTokenValue(value, s));
+		assert(s == "\"quoted\"");
+	}
+
+	// Modifier test - change integer (same size)
+	{
+		JsonParserStatic<512, 32> jp;
+
+		char *data2b = readTestData("test2b.json");
+		//printf("%s", data2b);
+
+		jp.addData(data2b, strlen(data2b));
+		free(data2b);
+
+		jp.parse();
+
+		// printTokens(jp);
+		const JsonParserGeneratorRK::jsmntok_t *key, *value;
+
+		bool bResult = jp.getValueTokenByKey(jp.getOuterToken(), "t2", value);
+		assert(bResult);
+
+		JsonModifier mod(jp);
+		bResult = mod.startModify(value);
+		assert(bResult);
+
+		mod.insertValue((int)9999);
+		mod.finish();
+
+		// printf("after modify\n");
+		// printTokens(jp);
+
+		String s;
+		int intValue;
+		float floatValue;
+		double doubleValue;
+		bool boolValue;
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 0));
+		//printf("key: start=%d end=%d\n", key->start, key->end);
+		//printf("value: start=%d end=%d\n", value->start, value->end);
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t1");
+
+		assert(jp.getTokenValue(value, s));
+		assert(s == "abc");
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 1));
+		assert(jp.getTokenValue(value, intValue));
+		assert(intValue == 9999);
+
+		assert(jp.getTokenValue(key, s));
+		assert(s== "t2");
+
+		assert(jp.getValueByKey(jp.getOuterObject(), "t2", intValue));
+		assert(intValue == 9999);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 2));
+		assert(jp.getTokenValue(value, floatValue));
+		assert(floatValue == 1234.5);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t3", value));
+		assert(jp.getTokenValue(value, floatValue));
+		assert(floatValue == 1234.5);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 3));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t4");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t4", value));
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 4));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t5");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(!boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 6));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t7");
+
+		assert(jp.getTokenValue(value, s));
+		assert(s == "\"quoted\"");
+	}
+
+	// Modifier test - change double
+	{
+		JsonParserStatic<512, 32> jp;
+
+		char *data2b = readTestData("test2b.json");
+		//printf("%s", data2b);
+
+		jp.addData(data2b, strlen(data2b));
+		free(data2b);
+
+		jp.parse();
+
+		// printTokens(jp);
+		const JsonParserGeneratorRK::jsmntok_t *key, *value;
+
+		bool bResult = jp.getValueTokenByKey(jp.getOuterToken(), "t3", value);
+		assert(bResult);
+
+		JsonModifier mod(jp);
+		bResult = mod.startModify(value);
+		assert(bResult);
+
+		mod.insertValue((double)12345.6);
+		mod.finish();
+
+		// printf("after modify\n");
+		// printTokens(jp);
+
+		String s;
+		int intValue;
+		float floatValue;
+		double doubleValue;
+		bool boolValue;
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 0));
+		//printf("key: start=%d end=%d\n", key->start, key->end);
+		//printf("value: start=%d end=%d\n", value->start, value->end);
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t1");
+
+		assert(jp.getTokenValue(value, s));
+		assert(s == "abc");
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 1));
+		assert(jp.getTokenValue(value, intValue));
+		assert(intValue == 1234);
+
+		assert(jp.getTokenValue(key, s));
+		assert(s== "t2");
+
+		assert(jp.getValueByKey(jp.getOuterObject(), "t2", intValue));
+		assert(intValue == 1234);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 2));
+		assert(jp.getTokenValue(value, doubleValue));
+		assert(doubleValue == 12345.6);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t3", value));
+		assert(jp.getTokenValue(value, doubleValue));
+		assert(doubleValue == 12345.6);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 3));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t4");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getValueTokenByKey(jp.getOuterObject(), "t4", value));
+		assert(jp.getTokenValue(value, boolValue));
+		assert(boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 4));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t5");
+		assert(jp.getTokenValue(value, boolValue));
+		assert(!boolValue);
+
+		assert(jp.getKeyValueTokenByIndex(jp.getOuterObject(), key, value, 6));
+		assert(jp.getTokenValue(key, s));
+		assert(s == "t7");
+
+		assert(jp.getTokenValue(value, s));
+		assert(s == "\"quoted\"");
+	}
+
+	// Array test low-level findLeftCommand. findRightComma
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("[1, 2 , 3]");
+
+		jp.parse();
+
+		//printTokens(jp);
+
+		JsonModifier mod(jp);
+
+		const JsonParserGeneratorRK::jsmntok_t *arrayToken = jp.getOuterArray();
+
+		const JsonParserGeneratorRK::jsmntok_t *tok;
+
+		tok = jp.getTokenByIndex(arrayToken, 0);
+		assert(mod.findLeftComma(tok) == -1);
+		assert(mod.findRightComma(tok) == 2);
+
+		tok = jp.getTokenByIndex(arrayToken, 1);
+		assert(mod.findLeftComma(tok) == 2);
+		assert(mod.findRightComma(tok) == 6);
+
+		tok = jp.getTokenByIndex(arrayToken, 2);
+		assert(mod.findLeftComma(tok) == 6);
+		assert(mod.findRightComma(tok) == -1);
+
+		mod.removeArrayIndex(arrayToken, 0);
+		// printTokens(jp);
+
+		const char *expected = "[ 2 , 3]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.removeArrayIndex(arrayToken, 1);
+		// printTokens(jp);
+
+		expected = "[ 2 ]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.removeArrayIndex(arrayToken, 0);
+
+		expected = "[  ]";
+		assertJsonParserBuffer(jp, expected);
+
+		arrayToken = jp.getOuterArray();
+		mod.startAppend(arrayToken);
+
+		mod.insertCheckSeparator();
+		mod.insertValue(4);
+
+		mod.finish();
+		//printTokens(jp);
+
+		expected = "[  4]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.startAppend(arrayToken);
+
+		mod.insertCheckSeparator();
+		mod.insertValue(5);
+
+		mod.finish();
+		//printTokens(jp);
+
+		expected = "[  4,5]";
+		assertJsonParserBuffer(jp, expected);
+
+	}
+
+	// Array test low-level findLeftCommand. findRightComma with strings
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("[\"a\", \"b\" ,\"c\" ]");
+
+		jp.parse();
+
+		//printTokens(jp);
+
+		JsonModifier mod(jp);
+
+		const JsonParserGeneratorRK::jsmntok_t *arrayToken = jp.getOuterArray();
+
+		const JsonParserGeneratorRK::jsmntok_t *tok;
+
+		tok = jp.getTokenByIndex(arrayToken, 0);
+		assert(mod.findLeftComma(tok) == -1);
+		assert(mod.findRightComma(tok) == 4);
+
+		tok = jp.getTokenByIndex(arrayToken, 1);
+		assert(mod.findLeftComma(tok) == 4);
+		assert(mod.findRightComma(tok) == 10);
+
+		tok = jp.getTokenByIndex(arrayToken, 2);
+		assert(mod.findLeftComma(tok) == 10);
+		assert(mod.findRightComma(tok) == -1);
+
+		mod.removeArrayIndex(arrayToken, 0);
+		// printTokens(jp);
+
+		const char *expected = "[ \"b\" ,\"c\" ]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.removeArrayIndex(arrayToken, 0);
+		expected = "[ \"c\" ]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.removeArrayIndex(arrayToken, 0);
+		expected = "[  ]";
+		assertJsonParserBuffer(jp, expected);
+		// printTokens(jp);
+
+		arrayToken = jp.getOuterArray();
+		mod.startAppend(arrayToken);
+
+		//mod.insertCheckSeparator();
+		mod.insertArrayValue("d");
+
+		mod.finish();
+		//printTokens(jp);
+
+		expected = "[  \"d\"]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.startAppend(arrayToken);
+
+		mod.insertArrayValue("e");
+
+		mod.finish();
+		// printTokens(jp);
+
+		expected = "[  \"d\",\"e\"]";
+		assertJsonParserBuffer(jp, expected);
+
+	}
+
+	// Object test removeKeyValue insertKeyValue
+	// Note: uses low-level API, probably best to use insertOrUpdateKeyValue in most code
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("{\"a\":1, \"b\":\"x\" ,\"c\":3 }");
+
+		jp.parse();
+
+		//printTokens(jp);
+
+		JsonModifier mod(jp);
+
+		mod.removeKeyValue(jp.getOuterObject(), "a");
+
+		//printTokens(jp);
+		const char *expected = "{ \"b\":\"x\" ,\"c\":3 }";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.removeKeyValue(jp.getOuterObject(), "c");
+
+		//printTokens(jp);
+		expected = "{ \"b\":\"x\"  }";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.removeKeyValue(jp.getOuterObject(), "b");
+
+		//printTokens(jp);
+		expected = "{   }";
+		assertJsonParserBuffer(jp, expected);
+
+
+		mod.startAppend(jp.getOuterObject());
+
+		mod.insertKeyValue("d", (int)4);
+
+		mod.finish();
+		//printTokens(jp);
+		expected = "{   \"d\":4}";
+		assertJsonParserBuffer(jp, expected);
+
+
+		mod.startAppend(jp.getOuterObject());
+
+		mod.insertKeyValue("e", "test");
+
+		mod.finish();
+		//printTokens(jp);
+		expected = "{   \"d\":4,\"e\":\"test\"}";
+		assertJsonParserBuffer(jp, expected);
+	}
+
+	// High level insertOrUpdateKeyValue API test
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("{}");
+
+		jp.parse();
+
+		//printTokens(jp);
+
+		JsonModifier mod(jp);
+
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "a", (int)1);
+
+		// printTokens(jp);
+
+		const char *expected = "{\"a\":1}";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "b", "x");
+
+		// printTokens(jp);
+
+		expected = "{\"a\":1,\"b\":\"x\"}";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "b", "xxx");
+
+		// printTokens(jp);
+
+		expected = "{\"a\":1,\"b\":\"xxx\"}";
+		assertJsonParserBuffer(jp, expected);
+
+		// Updating a value will reorder the keys in the object
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "a", (int)999);
+
+		expected = "{\"b\":\"xxx\",\"a\":999}";
+		assertJsonParserBuffer(jp, expected);
+
+		// String to number
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "b", (int)123);
+
+		expected = "{\"a\":999,\"b\":123}";
+		assertJsonParserBuffer(jp, expected);
+
+		// Number to string
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "b", "x");
+
+		expected = "{\"a\":999,\"b\":\"x\"}";
+		assertJsonParserBuffer(jp, expected);
+
+		// bool
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "c", true);
+
+		expected = "{\"a\":999,\"b\":\"x\",\"c\":true}";
+		assertJsonParserBuffer(jp, expected);
+
+		// float
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "d", 3.5);
+
+		expected = "{\"a\":999,\"b\":\"x\",\"c\":true,\"d\":3.500000}";
+		assertJsonParserBuffer(jp, expected);
+
+	}
+
+	// High level appendArrayValue API test
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("[]");
+
+		jp.parse();
+
+		// printTokens(jp);
+
+		JsonModifier mod(jp);
+
+		mod.appendArrayValue(jp.getOuterArray(), (int)1);
+
+		// printTokens(jp);
+
+		const char *expected = "[1]";
+		assertJsonParserBuffer(jp, expected);
+
+
+		mod.appendArrayValue(jp.getOuterArray(), (int)2);
+
+		//printTokens(jp);
+
+		expected = "[1,2]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.appendArrayValue(jp.getOuterArray(), (float)3.5);
+
+		//printTokens(jp);
+
+		expected = "[1,2,3.500000]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.appendArrayValue(jp.getOuterArray(), (bool)true);
+
+		//printTokens(jp);
+
+		expected = "[1,2,3.500000,true]";
+		assertJsonParserBuffer(jp, expected);
+
+		mod.appendArrayValue(jp.getOuterArray(), "xxx");
+
+		// printTokens(jp);
+
+		expected = "[1,2,3.500000,true,\"xxx\"]";
+		assertJsonParserBuffer(jp, expected);
+
+	}
+
+	// Array in object test
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("{\"t2\":{\"a\":\"foo\"},\"t3\":[1, 2, 3]}");
+
+		jp.parse();
+
+		JsonModifier mod(jp);
+
+		const JsonParserGeneratorRK::jsmntok_t *arrayToken = 0;
+		const char *expected;
+
+		bool bResult = jp.getValueTokenByKey(jp.getOuterObject(), "t3", arrayToken);
+		assert(bResult);
+		assert(arrayToken);
+
+		mod.appendArrayValue(arrayToken, 4);
+
+		expected = "{\"t2\":{\"a\":\"foo\"},\"t3\":[1, 2, 3,4]}";
+		assertJsonParserBuffer(jp, expected);
+	}
+
+	// Object in object test
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("{\"t2\":{\"a\":\"foo\"},\"t3\":[1, 2, 3]}");
+
+		jp.parse();
+
+		JsonModifier mod(jp);
+
+		const JsonParserGeneratorRK::jsmntok_t *t2Token = 0;
+		const char *expected;
+
+		bool bResult = jp.getValueTokenByKey(jp.getOuterObject(), "t2", t2Token);
+		assert(bResult);
+		assert(t2Token);
+
+		mod.insertOrUpdateKeyValue(t2Token, "b", "xxx");
+
+		expected = "{\"t2\":{\"a\":\"foo\",\"b\":\"xxx\"},\"t3\":[1, 2, 3]}";
+		assertJsonParserBuffer(jp, expected);
+
+
+		jp.getValueTokenByKey(jp.getOuterObject(), "t2", t2Token);
+		mod.insertOrUpdateKeyValue(t2Token, "b", "x");
+
+		expected = "{\"t2\":{\"a\":\"foo\",\"b\":\"x\"},\"t3\":[1, 2, 3]}";
+		assertJsonParserBuffer(jp, expected);
+
+		jp.getValueTokenByKey(jp.getOuterObject(), "t2", t2Token);
+		mod.insertOrUpdateKeyValue(t2Token, "a", (int)5);
+
+		expected = "{\"t2\":{\"b\":\"x\",\"a\":5},\"t3\":[1, 2, 3]}";
+		assertJsonParserBuffer(jp, expected);
+	}
+
+	// Append an object to an array
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("[]");
+
+		jp.parse();
+
+		JsonModifier mod(jp);
+
+		//printTokens(jp);
+
+		mod.startAppend(jp.getOuterArray());
+
+		mod.startObject();
+
+		mod.insertKeyValue("a", (int)1);
+		mod.insertKeyValue("b", (bool)false);
+		mod.insertKeyValue("c", "x");
+
+		mod.finishObjectOrArray();
+
+		mod.finish();
+
+		//printTokens(jp);
+
+		const char *expected;
+		expected = "[{\"a\":1,\"b\":false,\"c\":\"x\"}]";
+		assertJsonParserBuffer(jp, expected);
+
+		// Add another item to the array
+		mod.startAppend(jp.getOuterArray());
+
+		mod.startObject();
+
+		mod.insertKeyValue("a", (int)999);
+
+		mod.finishObjectOrArray();
+
+		mod.finish();
+
+		//printTokens(jp);
+
+		expected = "[{\"a\":1,\"b\":false,\"c\":\"x\"},{\"a\":999}]";
+		assertJsonParserBuffer(jp, expected);
+
+	}
+
+	// Append an array to an object
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("{}");
+
+		jp.parse();
+
+		JsonModifier mod(jp);
+
+		mod.startAppend(jp.getOuterObject());
+
+		mod.insertKeyArray("a");
+
+		mod.insertArrayValue(1);
+		mod.insertArrayValue(2);
+		mod.insertArrayValue(3);
+
+		mod.finishObjectOrArray();
+
+		mod.finish();
+
+		//printTokens(jp);
+		assertJsonParserBuffer(jp, "{\"a\":[1,2,3]}");
+
+		// Add another object to the array
+
+		mod.startAppend(jp.getOuterObject());
+
+		mod.insertKeyArray("b");
+
+		mod.insertArrayValue("test");
+
+		mod.finishObjectOrArray();
+
+		mod.finish();
+
+		//printTokens(jp);
+
+		assertJsonParserBuffer(jp, "{\"a\":[1,2,3],\"b\":[\"test\"]}");
+
+		// Add a simple value to the object
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "c", "xxx");
+
+		assertJsonParserBuffer(jp, "{\"a\":[1,2,3],\"b\":[\"test\"],\"c\":\"xxx\"}");
+
+		//printTokens(jp);
+
+		// Change an array value to a simple value
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "b", (int)99);
+
+		assertJsonParserBuffer(jp, "{\"a\":[1,2,3],\"c\":\"xxx\",\"b\":99}");
+
+	}
+
 }
+
+// Function to dump the token table. Used while debugging the JsonModify code.
+void printTokens(JsonParser &jp) {
+	JsonParserGeneratorRK::jsmntok_t *tokensEnd = jp.getTokensEnd();
+
+	for(JsonParserGeneratorRK::jsmntok_t *tok = jp.getTokens(); tok < tokensEnd; tok++) {
+		printToken(jp, tok);
+	}
+
+}
+
+void printToken(JsonParser &jp, const JsonParserGeneratorRK::jsmntok_t *tok) {
+	char tempBuf[1024];
+
+	const char *typeName = "UNKNOWN";
+	switch(tok->type) {
+	case JsonParserGeneratorRK::JSMN_UNDEFINED:
+		typeName = "UNDEFINED";
+		break;
+
+	case JsonParserGeneratorRK::JSMN_OBJECT:
+		typeName = "OBJECT";
+		break;
+
+	case JsonParserGeneratorRK::JSMN_ARRAY:
+		typeName = "ARRAY";
+		break;
+
+	case JsonParserGeneratorRK::JSMN_STRING:
+		typeName = "STRING";
+		break;
+
+	case JsonParserGeneratorRK::JSMN_PRIMITIVE:
+		typeName = "PRIMITIVE";
+		break;
+	}
+
+	memcpy(tempBuf, jp.getBuffer() + tok->start, tok->end - tok->start);
+	tempBuf[tok->end - tok->start] = 0;
+
+	printf("type=%s start=%d end=%d size=%d %s\n", typeName, tok->start, tok->end, tok->size, tempBuf);
+}
+
+
 
 void printIndent(size_t indent) {
 	for(size_t ii = 0; ii < 2 * indent; ii++) {

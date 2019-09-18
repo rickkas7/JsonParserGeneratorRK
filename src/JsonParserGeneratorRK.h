@@ -159,8 +159,21 @@ public:
 	 * @param buffer Pointer to the buffer
 	 *
 	 * @param bufferLen The length of the buffer
+	 *
+	 * This buffer will not be deleted when the object is destructed.
 	 */
 	JsonBuffer(char *buffer, size_t bufferLen);
+
+	/**
+	 * @brief Sets the buffers to the specified buffer and length
+	 *
+	 * @param buffer Pointer to the buffer
+	 *
+	 * @param bufferLen The length of the buffer
+	 *
+	 * This buffer will not be deleted when the object is destructed.
+	 */
+	void setBuffer(char *buffer, size_t bufferLen);
 
 	/**
 	 * @brief Allocate the buffer using malloc/realloc
@@ -203,6 +216,11 @@ public:
 	size_t getOffset() const { return offset; }
 
 	/**
+	 * @brief swets the current offset for writing
+	 */
+	void setOffset(size_t offset) { this->offset = offset; };
+
+	/**
 	 * @brief Gets the current length of the buffer
 	 *
 	 * The buffer length is either the bufferLen passed to the constructor that takes a buffer and bufferLen
@@ -216,6 +234,11 @@ public:
 	 * This only sets the offset to 0, it does not clear the bytes.
 	 */
 	void clear();
+
+	/**
+	 * @brief Null terminates the buffer
+	 */
+	void nullTerminate();
 
 protected:
 	char	*buffer; //!< The buffer to to read from or write to. This is not null-terminated.
@@ -703,16 +726,32 @@ public:
 	bool getTokenJsonString(const JsonParserGeneratorRK::jsmntok_t *token, JsonParserString &str) const;
 
 	/**
+	 * @brief Used internally in the test suite for printing the token list
+	 */
+	JsonParserGeneratorRK::jsmntok_t *getTokens() { return tokens; };
+
+	/**
+	 * @brief Used internally in the test suite for printing the token list
+	 */
+	JsonParserGeneratorRK::jsmntok_t *getTokensEnd() { return tokensEnd; };
+
+	/**
+	 * @brief Used internally in the test suite for printing the token list
+	 */
+	size_t getMaxTokens() const { return maxTokens; };
+
+	/**
 	 * @brief Given a Unicode UTF-16 code point, converts it to UTF-8 and appends it to str.
 	 */
 	static void appendUtf8(uint16_t unicode, JsonParserString &str);
-
 
 protected:
 	JsonParserGeneratorRK::jsmntok_t *tokens; //!< Array of tokens after parsing.
 	JsonParserGeneratorRK::jsmntok_t *tokensEnd; //!< Pointer into tokens, points after last used token.
 	size_t	maxTokens; //!< Number of tokens that can be stored in tokens.
 	JsonParserGeneratorRK::jsmn_parser parser;//!< The JSMN parser object.
+
+	friend class JsonModifier; // To access the tokens for modifying a JSON object in place
 };
 
 /**
@@ -739,6 +778,7 @@ private:
 	char staticBuffer[BUFFER_SIZE];//!< The static buffer to hold the data
 	JsonParserGeneratorRK::jsmntok_t staticTokens[MAX_TOKENS]; //!< The static buffer to hold the tokens.
 };
+
 
 /**
  * @brief This class provides a fluent-style API for easily traversing a tree of JSON objects to find a value
@@ -1104,6 +1144,11 @@ public:
 	void insertvsprintf(const char *fmt, va_list ap);
 
 	/**
+	 * @brief Used internally to set the current isFirst flag in the context
+	 */
+	void setIsFirst(bool isFirst = true);
+
+	/**
 	 * This constant is the maximum number of nested objects that are supported; the actual number is
 	 * one less than this so when set to 9 you can have eight objects nested in each other.
 	 *
@@ -1202,6 +1247,155 @@ public:
 protected:
 	JsonWriter *jw; //!< JsonWriter to write to
 };
+
+/**
+ * @brief Class for modifying a JSON object in place, without needing to make a copy of it
+ *
+ * Make sure the underlying JsonParser is big enough to hold the modified object. If you use
+ * JsonParserStatic<> make sure you have enough bytes and tokens.
+ *
+ * The most commonly used method is insertOrUpdateKeyValue(). This inserts or updates a key
+ * in an array. Another is appendArrayValue() which appends a value to an array. Both methods
+ * are templated so you can use them with any valid type supported by insertValue() in
+ * JsonWriter: bool, int, float, double, const char *.
+ *
+ * This class is a subclass of JsonWriter, so you can also use the low-level functions and
+ * JsonWriter methods to do unusual object manipulations.
+ *
+ * You can also use removeKeyValue() and removeArrayIndex() to remove keys or array entries.
+ */
+class JsonModifier : public JsonWriter {
+public:
+	JsonModifier(JsonParser &jp);
+	virtual ~JsonModifier();
+
+	/**
+	 * @brief Inserts or updates a key/value pair into an object.
+	 *
+	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
+	 * for example: bool, int, float, double, const char *.
+	 *
+	 * To modify the outermost object, use jp.getOuterObject() for the container.
+	 *
+	 * Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've
+	 * fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe.
+	 */
+	template<class T>
+	void insertOrUpdateKeyValue(const JsonParserGeneratorRK::jsmntok_t *container, const char *key, T value) {
+		// Remove existing item (ignore failure, as the key might not exist)
+		removeKeyValue(container, key);
+
+		// Create a new key/value pair
+		startAppend(container);
+		insertKeyValue(key, value);
+		finish();
+	}
+
+	/**
+	 * @brief Appends a value to an array
+	 *
+	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
+	 * for example: bool, int, float, double, const char *.
+	 *
+	 * To modify the outermost array, use jp.getOuterArray() for the arrayToken. You can also
+	 * modify arrays in an object using getValueTokenByKey().
+	 *
+	 * Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've
+	 * fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe.
+	 */
+	template<class T>
+	void appendArrayValue(const JsonParserGeneratorRK::jsmntok_t *arrayToken, T value) {
+		startAppend(arrayToken);
+		insertArrayValue(value);
+		finish();
+	}
+
+	/**
+	 * @brief Removes a key and value from an object
+	 *
+	 * Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've
+	 * fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe.
+	 */
+	bool removeKeyValue(const JsonParserGeneratorRK::jsmntok_t *container, const char *key);
+
+	/**
+	 * @brief Removes an entry from an array
+	 *
+	 * Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've
+	 * fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe.
+	 */
+	bool removeArrayIndex(const JsonParserGeneratorRK::jsmntok_t *container, size_t index);
+
+	/**
+	 * @brief Low level function to modify a token in place
+	 *
+	 * @param token the jsmntok_t to modify
+	 *
+	 * You must call finish() after modification is done to restore the object to a valid state!
+	 *
+	 * Note: insertOrUpdateKeyValue() does not use this. Instead it removes then appends the new
+	 * value. The reason is that startModify does not work if you change the type of the data to
+	 * or from a string. This is tricky to deal with correctly, so it's easier to just remove
+	 * and add the item again.
+	 */
+	bool startModify(const JsonParserGeneratorRK::jsmntok_t *token);
+
+	/**
+	 * @brief Low level function to append to an object or array
+	 *
+	 * @param arrayOrObjectToken the jsmntok_t to append to. This must be an object or array token.
+	 *
+	 * You must call finish() after modification is done to restore the object to a valid state.
+	 */
+	bool startAppend(const JsonParserGeneratorRK::jsmntok_t *arrayOrObjectToken);
+
+	/**
+	 * @brief Finish modifying the object
+	 *
+	 * Finish must be called after startModify or startAppend otherwise the
+	 * object will be corrupted.
+	 *
+	 * Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've
+	 * fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe.
+	 *
+	 * The high level function like insertOrUpdateKeyValue, appendArrayValue, removeKeyValue,
+	 * and removeArrayIndex internally call finish so you should not call it again with those
+	 * methods.
+	 */
+	void finish();
+
+
+	/**
+	 * @brief Return a copy of tok, but moving so start and end include the double quotes for strings
+	 *
+	 * Used internally, you probably won't need to use this.
+	 */
+	JsonParserGeneratorRK::jsmntok_t tokenWithQuotes(const JsonParserGeneratorRK::jsmntok_t *tok) const;
+
+	/**
+	 * @brief Find the offset of the comma to the left of the token, or -1 if there isn't one
+	 *
+	 * Used internally, you probably won't need to use this.
+	 */
+	int findLeftComma(const JsonParserGeneratorRK::jsmntok_t *tok) const;
+
+	/**
+	 * @brief Find the offset of the comma to the left of the token, or -1 if there isn't one
+	 *
+	 * Used internally, you probably won't need to use this.
+	 */
+	int findRightComma(const JsonParserGeneratorRK::jsmntok_t *tok) const;
+
+
+protected:
+	JsonParser &jp;				//!< The JsonParser object passed to the constructor
+	int start = -1;				//!< Start offset in the buffer. Set to -1 when startModify() or startAppend() is not in progress.
+	int origAfter = 0;			//!< Number of bytes after the insertion position, saved at saveLoc when start is in progress.
+	int saveLoc = 0;			//!< Location where data is temporarily saved until finish() is called
+	//bool addSeparator = false;	//!< Set by startAppend() and used by insertCheckSeparator()
+};
+
+
 
 #endif /* __JSONPARSERGENERATORRK_H */
 

@@ -16,6 +16,12 @@ JsonBuffer::JsonBuffer(char *buffer, size_t bufferLen)  : buffer(buffer), buffer
 
 }
 
+void JsonBuffer::setBuffer(char *buffer, size_t bufferLen) {
+	this->buffer = buffer;
+	this->bufferLen = bufferLen;
+	this->staticBuffers = true;
+}
+
 bool JsonBuffer::allocate(size_t len) {
 	if (!staticBuffers) {
 		char *newBuffer;
@@ -57,10 +63,21 @@ void JsonBuffer::clear() {
 	offset = 0;
 }
 
+void JsonBuffer::nullTerminate() {
+	if (buffer) {
+		if (offset < bufferLen) {
+			buffer[offset] = 0;
+		}
+		else {
+			buffer[bufferLen - 1] = 0;
+		}
+	}
+}
+
 
 //
 
-JsonParser::JsonParser() : JsonBuffer(), tokens(0), maxTokens(0) {
+JsonParser::JsonParser() : JsonBuffer(), tokens(0), tokensEnd(0), maxTokens(0) {
 }
 
 JsonParser::JsonParser(char *buffer, size_t bufferLen, JsonParserGeneratorRK::jsmntok_t *tokens, size_t maxTokens) :
@@ -646,7 +663,7 @@ void JsonWriter::init() {
 	offset = 0;
 
 	contextIndex = 0;
-	context[contextIndex].isFirst = false;
+	context[contextIndex].isFirst = true;
 	context[contextIndex].terminator = 0;
 
 	truncated = false;
@@ -657,6 +674,8 @@ bool JsonWriter::startObjectOrArray(char startChar, char endChar) {
 	if ((contextIndex + 1) >= MAX_NESTED_CONTEXT) {
 		return false;
 	}
+	insertCheckSeparator();
+
 	contextIndex++;
 
 	context[contextIndex].isFirst = true;
@@ -835,6 +854,7 @@ void JsonWriter::insertKeyObject(const char *key) {
 	insertCheckSeparator();
 	insertValue(key);
 	insertChar(':');
+	setIsFirst();
 	startObject();
 }
 
@@ -842,8 +862,228 @@ void JsonWriter::insertKeyArray(const char *key) {
 	insertCheckSeparator();
 	insertValue(key);
 	insertChar(':');
+	setIsFirst();
 	startArray();
 }
+
+void JsonWriter::setIsFirst(bool isFirst /* = true */) {
+	context[contextIndex].isFirst = isFirst;
+}
+
+
+
+JsonModifier::JsonModifier(JsonParser &jp) : jp(jp) {
+
+}
+
+JsonModifier::~JsonModifier() {
+
+}
+
+
+bool JsonModifier::removeKeyValue(const JsonParserGeneratorRK::jsmntok_t *container, const char *key) {
+
+
+	const JsonParserGeneratorRK::jsmntok_t *keyToken, *valueToken;
+
+	bool bResult = jp.getValueTokenByKey(container, key, valueToken);
+	if (!bResult) {
+		return false;
+	}
+
+	// The key token always proceeds the value token
+	keyToken = &valueToken[-1];
+
+	// Include the double quotes
+	const JsonParserGeneratorRK::jsmntok_t expandedKeyToken = tokenWithQuotes(keyToken);
+	const JsonParserGeneratorRK::jsmntok_t expandedValueToken = tokenWithQuotes(valueToken);
+
+	int left = findLeftComma(keyToken);
+	int right = findRightComma(valueToken);
+
+	if (left >= 0 && right >= 0) {
+		// Commas on both sides, just remove the one on the right
+		left = expandedKeyToken.start;
+		right++;
+	}
+	else
+	if (left >= 0) {
+		// Only comma on left, removing the last item so remove the comma
+		right = expandedValueToken.end;
+	}
+	else
+	if (right >= 0) {
+		// Only comma on the right, removing the first item so remove the comma
+		right++;
+		left = expandedKeyToken.start;
+	}
+	else {
+		// Single item, leaving array empty afterwards (both < 0), no commads
+		left = expandedKeyToken.start;
+		right = expandedValueToken.end;
+	}
+
+	origAfter = jp.getOffset() - right;
+
+	if (origAfter > 0) {
+		memmove(jp.getBuffer() + left, jp.getBuffer() + right, origAfter);
+	}
+
+	jp.setOffset(left + origAfter);
+	jp.parse();
+
+	return true;
+}
+
+bool JsonModifier::removeArrayIndex(const JsonParserGeneratorRK::jsmntok_t *container, size_t index) {
+
+	const JsonParserGeneratorRK::jsmntok_t *tok = jp.getTokenByIndex(container, index);
+	if (!tok) {
+		return false;
+	}
+
+	const JsonParserGeneratorRK::jsmntok_t expandedToken = tokenWithQuotes(tok);
+
+	int left = findLeftComma(tok);
+	int right = findRightComma(tok);
+
+	if (left >= 0 && right >= 0) {
+		// Commas on both sides, just remove the one on the right
+		left = expandedToken.start;
+	}
+	else
+	if (left >= 0) {
+		// Only comma on left, removing the last item so remove the comma
+		right = expandedToken.end;
+	}
+	else
+	if (right >= 0) {
+		// Only comma on the right, removing the first item so remove the comma
+		right++;
+		left = expandedToken.start;
+	}
+	else {
+		// Single item, leaving array empty afterwards (both < 0), no commads
+		left = expandedToken.start;
+		right = expandedToken.end;
+	}
+
+	origAfter = jp.getOffset() - right;
+
+	if (origAfter > 0) {
+		memmove(jp.getBuffer() + left, jp.getBuffer() + right, origAfter);
+	}
+
+	jp.setOffset(left + origAfter);
+	jp.parse();
+
+	return true;
+}
+bool JsonModifier::startModify(const JsonParserGeneratorRK::jsmntok_t *token) {
+	if (start != -1) {
+		// Modification or insertion already in progress
+		return false;
+	}
+	start = token->start;
+	origAfter = jp.getOffset() - token->end;
+	saveLoc = jp.getBufferLen() - origAfter;
+
+	//printf("start=%d origAfter=%d saveLoc=%d bufferSize=%d\n", start, origAfter, saveLoc, saveLoc - start);
+
+	if (origAfter > 0) {
+		memmove(jp.getBuffer() + saveLoc, jp.getBuffer() + token->end, origAfter);
+	}
+
+	setBuffer(jp.getBuffer() + start, saveLoc - start);
+	init();
+
+	return true;
+}
+
+bool JsonModifier::startAppend(const JsonParserGeneratorRK::jsmntok_t *arrayOrObjectToken) {
+	if (start != -1) {
+		// Modification or insertion already in progress
+		return false;
+	}
+
+	start = arrayOrObjectToken->end - 1; // Before the closing ] or }
+	origAfter = jp.getOffset() - start;
+	saveLoc = jp.getBufferLen() - origAfter;
+
+	if (origAfter > 0) {
+		memmove(jp.getBuffer() + saveLoc, jp.getBuffer() + start, origAfter);
+	}
+
+	setBuffer(jp.getBuffer() + start, saveLoc - start);
+	init();
+
+	// If array is not empty, add a separator
+	setIsFirst(arrayOrObjectToken->size == 0);
+
+	return true;
+}
+
+
+void JsonModifier::finish() {
+	if (start == -1) {
+		return;
+	}
+	//printf("finishing offset=%d\n", getOffset());
+
+	if (origAfter > 0) {
+		memmove(jp.getBuffer() + start + getOffset(), jp.getBuffer() + saveLoc, origAfter);
+	}
+	jp.setOffset(start + getOffset() + origAfter);
+	jp.parse();
+	start = -1;
+}
+
+
+JsonParserGeneratorRK::jsmntok_t JsonModifier::tokenWithQuotes(const JsonParserGeneratorRK::jsmntok_t *tok) const {
+	JsonParserGeneratorRK::jsmntok_t expandedToken = *tok;
+
+	if (tok->type == JsonParserGeneratorRK::JSMN_STRING) {
+		expandedToken.start--;
+		expandedToken.end++;
+	}
+	return expandedToken;
+}
+
+int JsonModifier::findLeftComma(const JsonParserGeneratorRK::jsmntok_t *tok) const {
+
+	JsonParserGeneratorRK::jsmntok_t expandedToken = tokenWithQuotes(tok);
+
+	int ii = expandedToken.start - 1;
+	while(ii >= 0 && jp.getBuffer()[ii] == ' ') {
+		// Whitespace
+		ii--;
+	}
+	// printf("after whitespace check ii=%d c=%c\n", ii, jp.getBuffer()[ii]);
+
+	if (ii < 0 || jp.getBuffer()[ii] != ',') {
+		return -1;
+	}
+
+
+	return ii;
+}
+
+int JsonModifier::findRightComma(const JsonParserGeneratorRK::jsmntok_t *tok) const {
+	JsonParserGeneratorRK::jsmntok_t expandedToken = tokenWithQuotes(tok);
+
+	int ii = expandedToken.end;
+	while(ii < jp.getOffset() && jp.getBuffer()[ii] == ' ') {
+		// Whitespace
+		ii++;
+	}
+
+	if (ii < 0 || jp.getBuffer()[ii] != ',') {
+		return -1;
+	}
+
+	return ii;
+}
+
 
 
 // begin jsmn.cpp

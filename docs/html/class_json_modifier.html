@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.14"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>JsonParserGeneratorRK: JsonWriterStatic&lt; BUFFER_SIZE &gt; Class Template Reference</title>
+<title>JsonParserGeneratorRK: JsonModifier Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,28 +61,66 @@ $(function() {
 
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a>  </div>
   <div class="headertitle">
-<div class="title">JsonWriterStatic&lt; BUFFER_SIZE &gt; Class Template Reference</div>  </div>
+<div class="title">JsonModifier Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>Creates a <a class="el" href="class_json_writer.html" title="Class for building a JSON string. ">JsonWriter</a> with a statically allocated buffer.  
- <a href="class_json_writer_static.html#details">More...</a></p>
+<p>Class for modifying a JSON object in place, without needing to make a copy of it.  
+ <a href="class_json_modifier.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_json_parser_generator_r_k_8h_source.html">JsonParserGeneratorRK.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for JsonWriterStatic&lt; BUFFER_SIZE &gt;:</div>
+Inheritance diagram for JsonModifier:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="class_json_writer_static.png" usemap="#JsonWriterStatic_3C_20BUFFER_5FSIZE_20_3E_map" alt=""/>
-  <map id="JsonWriterStatic_3C_20BUFFER_5FSIZE_20_3E_map" name="JsonWriterStatic_3C_20BUFFER_5FSIZE_20_3E_map">
-<area href="class_json_writer.html" title="Class for building a JSON string. " alt="JsonWriter" shape="rect" coords="0,56,211,80"/>
-<area href="class_json_buffer.html" title="Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter. " alt="JsonBuffer" shape="rect" coords="0,0,211,24"/>
+  <img src="class_json_modifier.png" usemap="#JsonModifier_map" alt=""/>
+  <map id="JsonModifier_map" name="JsonModifier_map">
+<area href="class_json_writer.html" title="Class for building a JSON string. " alt="JsonWriter" shape="rect" coords="0,56,86,80"/>
+<area href="class_json_buffer.html" title="Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter. " alt="JsonBuffer" shape="rect" coords="0,0,86,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac3d52284d9348720d59273bbbe228edf"><td class="memItemLeft" align="right" valign="top"><a id="ac3d52284d9348720d59273bbbe228edf"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>JsonModifier</b> (<a class="el" href="class_json_parser.html">JsonParser</a> &amp;<a class="el" href="class_json_modifier.html#ab78d43036cea562e37640ae12e20b706">jp</a>)</td></tr>
+<tr class="separator:ac3d52284d9348720d59273bbbe228edf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acca6028c0ec31489950f43e86c574229"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:acca6028c0ec31489950f43e86c574229"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#acca6028c0ec31489950f43e86c574229">insertOrUpdateKeyValue</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *container, const char *key, T value)</td></tr>
+<tr class="memdesc:acca6028c0ec31489950f43e86c574229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts or updates a key/value pair into an object.  <a href="#acca6028c0ec31489950f43e86c574229">More...</a><br /></td></tr>
+<tr class="separator:acca6028c0ec31489950f43e86c574229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac492f5945ef4e4bc003fea5af5b9c504"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ac492f5945ef4e4bc003fea5af5b9c504"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#ac492f5945ef4e4bc003fea5af5b9c504">appendArrayValue</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *arrayToken, T value)</td></tr>
+<tr class="memdesc:ac492f5945ef4e4bc003fea5af5b9c504"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends a value to an array.  <a href="#ac492f5945ef4e4bc003fea5af5b9c504">More...</a><br /></td></tr>
+<tr class="separator:ac492f5945ef4e4bc003fea5af5b9c504"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadf76d2cef6b1a6ffe7868031cfb0e11"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#aadf76d2cef6b1a6ffe7868031cfb0e11">removeKeyValue</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *container, const char *key)</td></tr>
+<tr class="memdesc:aadf76d2cef6b1a6ffe7868031cfb0e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a key and value from an object.  <a href="#aadf76d2cef6b1a6ffe7868031cfb0e11">More...</a><br /></td></tr>
+<tr class="separator:aadf76d2cef6b1a6ffe7868031cfb0e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba45c4fe467fa70b837f190986cf190b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#aba45c4fe467fa70b837f190986cf190b">removeArrayIndex</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *container, size_t index)</td></tr>
+<tr class="memdesc:aba45c4fe467fa70b837f190986cf190b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes an entry from an array.  <a href="#aba45c4fe467fa70b837f190986cf190b">More...</a><br /></td></tr>
+<tr class="separator:aba45c4fe467fa70b837f190986cf190b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa53d66feb3cd13165f3a2eac012a123b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#aa53d66feb3cd13165f3a2eac012a123b">startModify</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *token)</td></tr>
+<tr class="memdesc:aa53d66feb3cd13165f3a2eac012a123b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low level function to modify a token in place.  <a href="#aa53d66feb3cd13165f3a2eac012a123b">More...</a><br /></td></tr>
+<tr class="separator:aa53d66feb3cd13165f3a2eac012a123b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5bf356377a71120588413a4be998607"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#ab5bf356377a71120588413a4be998607">startAppend</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *arrayOrObjectToken)</td></tr>
+<tr class="memdesc:ab5bf356377a71120588413a4be998607"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low level function to append to an object or array.  <a href="#ab5bf356377a71120588413a4be998607">More...</a><br /></td></tr>
+<tr class="separator:ab5bf356377a71120588413a4be998607"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae531232fa98f72eea8ea6ba07c065497"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#ae531232fa98f72eea8ea6ba07c065497">finish</a> ()</td></tr>
+<tr class="memdesc:ae531232fa98f72eea8ea6ba07c065497"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finish modifying the object.  <a href="#ae531232fa98f72eea8ea6ba07c065497">More...</a><br /></td></tr>
+<tr class="separator:ae531232fa98f72eea8ea6ba07c065497"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e685480ff2e978480cdc215b340e3a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#a5e685480ff2e978480cdc215b340e3a7">tokenWithQuotes</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *tok) const</td></tr>
+<tr class="memdesc:a5e685480ff2e978480cdc215b340e3a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a copy of tok, but moving so start and end include the double quotes for strings.  <a href="#a5e685480ff2e978480cdc215b340e3a7">More...</a><br /></td></tr>
+<tr class="separator:a5e685480ff2e978480cdc215b340e3a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b67ce1041b0e40e467639de1eeeca1e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#a5b67ce1041b0e40e467639de1eeeca1e">findLeftComma</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *tok) const</td></tr>
+<tr class="memdesc:a5b67ce1041b0e40e467639de1eeeca1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the offset of the comma to the left of the token, or -1 if there isn't one.  <a href="#a5b67ce1041b0e40e467639de1eeeca1e">More...</a><br /></td></tr>
+<tr class="separator:a5b67ce1041b0e40e467639de1eeeca1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24fac4c2257f932aff41792214de35ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#a24fac4c2257f932aff41792214de35ca">findRightComma</a> (const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *tok) const</td></tr>
+<tr class="memdesc:a24fac4c2257f932aff41792214de35ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the offset of the comma to the left of the token, or -1 if there isn't one.  <a href="#a24fac4c2257f932aff41792214de35ca">More...</a><br /></td></tr>
+<tr class="separator:a24fac4c2257f932aff41792214de35ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_json_writer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_json_writer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_json_writer.html">JsonWriter</a></td></tr>
 <tr class="memitem:ac236bb60b9ae908fd178baff276df0c8 inherit pub_methods_class_json_writer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_writer.html#ac236bb60b9ae908fd178baff276df0c8">JsonWriter</a> ()</td></tr>
 <tr class="memdesc:ac236bb60b9ae908fd178baff276df0c8 inherit pub_methods_class_json_writer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="class_json_writer.html" title="Class for building a JSON string. ">JsonWriter</a> with a dynamically allocated buffer.  <a href="class_json_writer.html#ac236bb60b9ae908fd178baff276df0c8">More...</a><br /></td></tr>
@@ -217,9 +255,25 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a70969847d857815a9ded6450378e0e53 inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a70969847d857815a9ded6450378e0e53">clear</a> ()</td></tr>
 <tr class="memdesc:a70969847d857815a9ded6450378e0e53 inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the current buffer for writing.  <a href="class_json_buffer.html#a70969847d857815a9ded6450378e0e53">More...</a><br /></td></tr>
 <tr class="separator:a70969847d857815a9ded6450378e0e53 inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_static_attribs_class_json_writer"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_class_json_writer')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="class_json_writer.html">JsonWriter</a></td></tr>
-<tr class="memitem:a7d1daa126e962c611373f65d1e83e4ee inherit pub_static_attribs_class_json_writer"><td class="memItemLeft" align="right" valign="top">static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_writer.html#a7d1daa126e962c611373f65d1e83e4ee">MAX_NESTED_CONTEXT</a> = 9</td></tr>
-<tr class="separator:a7d1daa126e962c611373f65d1e83e4ee inherit pub_static_attribs_class_json_writer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:ab78d43036cea562e37640ae12e20b706"><td class="memItemLeft" align="right" valign="top"><a id="ab78d43036cea562e37640ae12e20b706"></a>
+<a class="el" href="class_json_parser.html">JsonParser</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#ab78d43036cea562e37640ae12e20b706">jp</a></td></tr>
+<tr class="memdesc:ab78d43036cea562e37640ae12e20b706"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="class_json_parser.html" title="API to the JsonParser. ">JsonParser</a> object passed to the constructor. <br /></td></tr>
+<tr class="separator:ab78d43036cea562e37640ae12e20b706"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd83b67763dc4ce55562bbdd5cea1e20"><td class="memItemLeft" align="right" valign="top"><a id="abd83b67763dc4ce55562bbdd5cea1e20"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#abd83b67763dc4ce55562bbdd5cea1e20">start</a> = -1</td></tr>
+<tr class="memdesc:abd83b67763dc4ce55562bbdd5cea1e20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start offset in the buffer. Set to -1 when <a class="el" href="class_json_modifier.html#aa53d66feb3cd13165f3a2eac012a123b" title="Low level function to modify a token in place. ">startModify()</a> or <a class="el" href="class_json_modifier.html#ab5bf356377a71120588413a4be998607" title="Low level function to append to an object or array. ">startAppend()</a> is not in progress. <br /></td></tr>
+<tr class="separator:abd83b67763dc4ce55562bbdd5cea1e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec8c0683c15ad68dc1cb8180321bf902"><td class="memItemLeft" align="right" valign="top"><a id="aec8c0683c15ad68dc1cb8180321bf902"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#aec8c0683c15ad68dc1cb8180321bf902">origAfter</a> = 0</td></tr>
+<tr class="memdesc:aec8c0683c15ad68dc1cb8180321bf902"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bytes after the insertion position, saved at saveLoc when start is in progress. <br /></td></tr>
+<tr class="separator:aec8c0683c15ad68dc1cb8180321bf902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ea53418d660ce7cdec0964cca76015b"><td class="memItemLeft" align="right" valign="top"><a id="a7ea53418d660ce7cdec0964cca76015b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_modifier.html#a7ea53418d660ce7cdec0964cca76015b">saveLoc</a> = 0</td></tr>
+<tr class="memdesc:a7ea53418d660ce7cdec0964cca76015b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Location where data is temporarily saved until <a class="el" href="class_json_modifier.html#ae531232fa98f72eea8ea6ba07c065497" title="Finish modifying the object. ">finish()</a> is called. <br /></td></tr>
+<tr class="separator:a7ea53418d660ce7cdec0964cca76015b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_class_json_writer"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_json_writer')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_json_writer.html">JsonWriter</a></td></tr>
 <tr class="memitem:a28554227000e3a49b446e5db77f0505e inherit pro_attribs_class_json_writer"><td class="memItemLeft" align="right" valign="top"><a id="a28554227000e3a49b446e5db77f0505e"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_writer.html#a28554227000e3a49b446e5db77f0505e">contextIndex</a></td></tr>
@@ -254,23 +308,317 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a729845e25c624d1dcb1da9712afbcdf7">staticBuffers</a></td></tr>
 <tr class="memdesc:a729845e25c624d1dcb1da9712afbcdf7 inherit pro_attribs_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the buffers were passed in and should not freed or reallocated. <br /></td></tr>
 <tr class="separator:a729845e25c624d1dcb1da9712afbcdf7 inherit pro_attribs_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_class_json_writer"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_class_json_writer')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="class_json_writer.html">JsonWriter</a></td></tr>
+<tr class="memitem:a7d1daa126e962c611373f65d1e83e4ee inherit pub_static_attribs_class_json_writer"><td class="memItemLeft" align="right" valign="top">static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_writer.html#a7d1daa126e962c611373f65d1e83e4ee">MAX_NESTED_CONTEXT</a> = 9</td></tr>
+<tr class="separator:a7d1daa126e962c611373f65d1e83e4ee inherit pub_static_attribs_class_json_writer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;size_t BUFFER_SIZE&gt;<br />
-class JsonWriterStatic&lt; BUFFER_SIZE &gt;</h3>
+<div class="textblock"><p>Class for modifying a JSON object in place, without needing to make a copy of it. </p>
+<p>Make sure the underlying <a class="el" href="class_json_parser.html" title="API to the JsonParser. ">JsonParser</a> is big enough to hold the modified object. If you use JsonParserStatic&lt;&gt; make sure you have enough bytes and tokens.</p>
+<p>The most commonly used method is <a class="el" href="class_json_modifier.html#acca6028c0ec31489950f43e86c574229" title="Inserts or updates a key/value pair into an object. ">insertOrUpdateKeyValue()</a>. This inserts or updates a key in an array. Another is <a class="el" href="class_json_modifier.html#ac492f5945ef4e4bc003fea5af5b9c504" title="Appends a value to an array. ">appendArrayValue()</a> which appends a value to an array. Both methods are templated so you can use them with any valid type supported by <a class="el" href="class_json_writer.html#ac58734c238ba7be066838591b0cc7743" title="Inserts a boolean value (&quot;true&quot; or &quot;false&quot;). ">insertValue()</a> in <a class="el" href="class_json_writer.html" title="Class for building a JSON string. ">JsonWriter</a>: bool, int, float, double, const char *.</p>
+<p>This class is a subclass of <a class="el" href="class_json_writer.html" title="Class for building a JSON string. ">JsonWriter</a>, so you can also use the low-level functions and <a class="el" href="class_json_writer.html" title="Class for building a JSON string. ">JsonWriter</a> methods to do unusual object manipulations.</p>
+<p>You can also use <a class="el" href="class_json_modifier.html#aadf76d2cef6b1a6ffe7868031cfb0e11" title="Removes a key and value from an object. ">removeKeyValue()</a> and <a class="el" href="class_json_modifier.html#aba45c4fe467fa70b837f190986cf190b" title="Removes an entry from an array. ">removeArrayIndex()</a> to remove keys or array entries. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac492f5945ef4e4bc003fea5af5b9c504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac492f5945ef4e4bc003fea5af5b9c504">&#9670;&nbsp;</a></span>appendArrayValue()</h2>
 
-<p>Creates a <a class="el" href="class_json_writer.html" title="Class for building a JSON string. ">JsonWriter</a> with a statically allocated buffer. </p>
-<p>You typically do this when you want to create a buffer as a global variable.</p>
-<p>Example:</p>
-<div class="fragment"><div class="line"><a class="code" href="class_json_writer_static.html">JsonWriterStatic&lt;256&gt;</a> jsonWriter;</div></div><!-- fragment --><p>Creates a 256 byte buffer to write JSON to. You'd normally do this as a global variable, but for smaller buffers (256 and smaller should be fine) in the loop thread, you can allocate one on the stack as a local variable.</p>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JsonModifier::appendArrayValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>arrayToken</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Appends a value to an array. </p>
+<p>Uses templates so you can pass any type object that's supported by <a class="el" href="class_json_writer.html#ac58734c238ba7be066838591b0cc7743" title="Inserts a boolean value (&quot;true&quot; or &quot;false&quot;). ">insertValue()</a> overloads, for example: bool, int, float, double, const char *.</p>
+<p>To modify the outermost array, use jp.getOuterArray() for the arrayToken. You can also modify arrays in an object using getValueTokenByKey().</p>
+<p>Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe. </p>
+
+</div>
+</div>
+<a id="a5b67ce1041b0e40e467639de1eeeca1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b67ce1041b0e40e467639de1eeeca1e">&#9670;&nbsp;</a></span>findLeftComma()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int JsonModifier::findLeftComma </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>tok</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find the offset of the comma to the left of the token, or -1 if there isn't one. </p>
+<p>Used internally, you probably won't need to use this. </p>
+
+</div>
+</div>
+<a id="a24fac4c2257f932aff41792214de35ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24fac4c2257f932aff41792214de35ca">&#9670;&nbsp;</a></span>findRightComma()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int JsonModifier::findRightComma </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>tok</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Find the offset of the comma to the left of the token, or -1 if there isn't one. </p>
+<p>Used internally, you probably won't need to use this. </p>
+
+</div>
+</div>
+<a id="ae531232fa98f72eea8ea6ba07c065497"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae531232fa98f72eea8ea6ba07c065497">&#9670;&nbsp;</a></span>finish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JsonModifier::finish </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finish modifying the object. </p>
+<p>Finish must be called after startModify or startAppend otherwise the object will be corrupted.</p>
+<p>Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe.</p>
+<p>The high level function like insertOrUpdateKeyValue, appendArrayValue, removeKeyValue, and removeArrayIndex internally call finish so you should not call it again with those methods. </p>
+
+</div>
+</div>
+<a id="acca6028c0ec31489950f43e86c574229"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acca6028c0ec31489950f43e86c574229">&#9670;&nbsp;</a></span>insertOrUpdateKeyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JsonModifier::insertOrUpdateKeyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Inserts or updates a key/value pair into an object. </p>
+<p>Uses templates so you can pass any type object that's supported by <a class="el" href="class_json_writer.html#ac58734c238ba7be066838591b0cc7743" title="Inserts a boolean value (&quot;true&quot; or &quot;false&quot;). ">insertValue()</a> overloads, for example: bool, int, float, double, const char *.</p>
+<p>To modify the outermost object, use jp.getOuterObject() for the container.</p>
+<p>Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe. </p>
+
+</div>
+</div>
+<a id="aba45c4fe467fa70b837f190986cf190b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba45c4fe467fa70b837f190986cf190b">&#9670;&nbsp;</a></span>removeArrayIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JsonModifier::removeArrayIndex </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes an entry from an array. </p>
+<p>Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe. </p>
+
+</div>
+</div>
+<a id="aadf76d2cef6b1a6ffe7868031cfb0e11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadf76d2cef6b1a6ffe7868031cfb0e11">&#9670;&nbsp;</a></span>removeKeyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JsonModifier::removeKeyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>container</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a key and value from an object. </p>
+<p>Note: This method call jp.parse() so any jsmntok_t may be changed by this method. If you've fetched one, such as by using getValueTokenByKey() be sure to fetch it again to be safe. </p>
+
+</div>
+</div>
+<a id="ab5bf356377a71120588413a4be998607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5bf356377a71120588413a4be998607">&#9670;&nbsp;</a></span>startAppend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JsonModifier::startAppend </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>arrayOrObjectToken</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Low level function to append to an object or array. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">BUFFER_SIZE</td><td>The size of the buffer to reserve. </td></tr>
+    <tr><td class="paramname">arrayOrObjectToken</td><td>the jsmntok_t to append to. This must be an object or array token.</td></tr>
   </table>
   </dd>
 </dl>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+<p>You must call <a class="el" href="class_json_modifier.html#ae531232fa98f72eea8ea6ba07c065497" title="Finish modifying the object. ">finish()</a> after modification is done to restore the object to a valid state. </p>
+
+</div>
+</div>
+<a id="aa53d66feb3cd13165f3a2eac012a123b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa53d66feb3cd13165f3a2eac012a123b">&#9670;&nbsp;</a></span>startModify()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool JsonModifier::startModify </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Low level function to modify a token in place. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">token</td><td>the jsmntok_t to modify</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>You must call <a class="el" href="class_json_modifier.html#ae531232fa98f72eea8ea6ba07c065497" title="Finish modifying the object. ">finish()</a> after modification is done to restore the object to a valid state!</p>
+<p>Note: <a class="el" href="class_json_modifier.html#acca6028c0ec31489950f43e86c574229" title="Inserts or updates a key/value pair into an object. ">insertOrUpdateKeyValue()</a> does not use this. Instead it removes then appends the new value. The reason is that startModify does not work if you change the type of the data to or from a string. This is tricky to deal with correctly, so it's easier to just remove and add the item again. </p>
+
+</div>
+</div>
+<a id="a5e685480ff2e978480cdc215b340e3a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e685480ff2e978480cdc215b340e3a7">&#9670;&nbsp;</a></span>tokenWithQuotes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> JsonModifier::tokenWithQuotes </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="struct_json_parser_generator_r_k_1_1jsmntok__t.html">JsonParserGeneratorRK::jsmntok_t</a> *&#160;</td>
+          <td class="paramname"><em>tok</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a copy of tok, but moving so start and end include the double quotes for strings. </p>
+<p>Used internally, you probably won't need to use this. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/<a class="el" href="_json_parser_generator_r_k_8h_source.html">JsonParserGeneratorRK.h</a></li>
+<li>src/JsonParserGeneratorRK.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

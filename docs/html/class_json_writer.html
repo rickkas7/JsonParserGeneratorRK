@@ -80,8 +80,9 @@ Inheritance diagram for JsonWriter:</div>
  <div class="center">
   <img src="class_json_writer.png" usemap="#JsonWriter_map" alt=""/>
   <map id="JsonWriter_map" name="JsonWriter_map">
-<area href="class_json_buffer.html" title="Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter. " alt="JsonBuffer" shape="rect" coords="0,0,211,24"/>
-<area href="class_json_writer_static.html" title="Creates a JsonWriter with a statically allocated buffer. " alt="JsonWriterStatic&lt; BUFFER_SIZE &gt;" shape="rect" coords="0,112,211,136"/>
+<area href="class_json_buffer.html" title="Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter. " alt="JsonBuffer" shape="rect" coords="110,0,321,24"/>
+<area href="class_json_modifier.html" title="Class for modifying a JSON object in place, without needing to make a copy of it. ..." alt="JsonModifier" shape="rect" coords="0,112,211,136"/>
+<area href="class_json_writer_static.html" title="Creates a JsonWriter with a statically allocated buffer. " alt="JsonWriterStatic&lt; BUFFER_SIZE &gt;" shape="rect" coords="221,112,432,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -175,6 +176,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:ab737d9527845638e08bd71034d419e49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_writer.html#ab737d9527845638e08bd71034d419e49">insertvsprintf</a> (const char *fmt, va_list ap)</td></tr>
 <tr class="memdesc:ab737d9527845638e08bd71034d419e49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used internally to insert using snprintf formatting with a va_list.  <a href="#ab737d9527845638e08bd71034d419e49">More...</a><br /></td></tr>
 <tr class="separator:ab737d9527845638e08bd71034d419e49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc30ff673c866c7a2366a8c064b5a565"><td class="memItemLeft" align="right" valign="top"><a id="afc30ff673c866c7a2366a8c064b5a565"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_writer.html#afc30ff673c866c7a2366a8c064b5a565">setIsFirst</a> (bool isFirst=true)</td></tr>
+<tr class="memdesc:afc30ff673c866c7a2366a8c064b5a565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used internally to set the current isFirst flag in the context. <br /></td></tr>
+<tr class="separator:afc30ff673c866c7a2366a8c064b5a565"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_json_buffer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_json_buffer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_json_buffer.html">JsonBuffer</a></td></tr>
 <tr class="memitem:a7198fe2dc430c6ebbc2374698c86f932 inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top"><a id="a7198fe2dc430c6ebbc2374698c86f932"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a7198fe2dc430c6ebbc2374698c86f932">JsonBuffer</a> ()</td></tr>
@@ -187,6 +192,9 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a645819ad48ee172c01a482bef9c1f765 inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a645819ad48ee172c01a482bef9c1f765">JsonBuffer</a> (char *<a class="el" href="class_json_buffer.html#aaee27fe51d12d68bd6031df3bc78b6b5">buffer</a>, size_t <a class="el" href="class_json_buffer.html#af06130f43f71623ea6afe049c846e52b">bufferLen</a>)</td></tr>
 <tr class="memdesc:a645819ad48ee172c01a482bef9c1f765 inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="class_json_buffer.html" title="Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter. ">JsonBuffer</a> with an external buffer of a given size.  <a href="class_json_buffer.html#a645819ad48ee172c01a482bef9c1f765">More...</a><br /></td></tr>
 <tr class="separator:a645819ad48ee172c01a482bef9c1f765 inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6721ab2b50d9b0bfc64d51c84c295230 inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a6721ab2b50d9b0bfc64d51c84c295230">setBuffer</a> (char *<a class="el" href="class_json_buffer.html#aaee27fe51d12d68bd6031df3bc78b6b5">buffer</a>, size_t <a class="el" href="class_json_buffer.html#af06130f43f71623ea6afe049c846e52b">bufferLen</a>)</td></tr>
+<tr class="memdesc:a6721ab2b50d9b0bfc64d51c84c295230 inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the buffers to the specified buffer and length.  <a href="class_json_buffer.html#a6721ab2b50d9b0bfc64d51c84c295230">More...</a><br /></td></tr>
+<tr class="separator:a6721ab2b50d9b0bfc64d51c84c295230 inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1eb9d0cae3ef9a9ac56b8580bc70fe2e inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a1eb9d0cae3ef9a9ac56b8580bc70fe2e">allocate</a> (size_t len)</td></tr>
 <tr class="memdesc:a1eb9d0cae3ef9a9ac56b8580bc70fe2e inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate the buffer using malloc/realloc.  <a href="class_json_buffer.html#a1eb9d0cae3ef9a9ac56b8580bc70fe2e">More...</a><br /></td></tr>
 <tr class="separator:a1eb9d0cae3ef9a9ac56b8580bc70fe2e inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,6 +211,10 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#adedc049fc02ef5bad2b3f8e7a1ba17b6">getOffset</a> () const</td></tr>
 <tr class="memdesc:adedc049fc02ef5bad2b3f8e7a1ba17b6 inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current offset for writing. <br /></td></tr>
 <tr class="separator:adedc049fc02ef5bad2b3f8e7a1ba17b6 inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0043413c56e23d83f3b4dbe508a35315 inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top"><a id="a0043413c56e23d83f3b4dbe508a35315"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a0043413c56e23d83f3b4dbe508a35315">setOffset</a> (size_t <a class="el" href="class_json_buffer.html#aeb1ab3291108f351834f2e8c6784538c">offset</a>)</td></tr>
+<tr class="memdesc:a0043413c56e23d83f3b4dbe508a35315 inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">swets the current offset for writing <br /></td></tr>
+<tr class="separator:a0043413c56e23d83f3b4dbe508a35315 inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a486352be5658e94b9b9bd13563801e68 inherit pub_methods_class_json_buffer"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a486352be5658e94b9b9bd13563801e68">getBufferLen</a> () const</td></tr>
 <tr class="memdesc:a486352be5658e94b9b9bd13563801e68 inherit pub_methods_class_json_buffer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current length of the buffer.  <a href="class_json_buffer.html#a486352be5658e94b9b9bd13563801e68">More...</a><br /></td></tr>
 <tr class="separator:a486352be5658e94b9b9bd13563801e68 inherit pub_methods_class_json_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>

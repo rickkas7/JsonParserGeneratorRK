@@ -12,5 +12,6 @@ var searchData=
   ['operator_3d_3d',['operator==',['../class_string.html#a21388f8d52ccecd225db7d6724d3e38f',1,'String::operator==(const String &amp;rhs) const'],['../class_string.html#ad453b9631caf5d0164ae493bf1aa9680',1,'String::operator==(const char *cstr) const']]],
   ['operator_3e',['operator&gt;',['../class_string.html#a25bbbdda663b6b0eb3ed3458e80fc66e',1,'String']]],
   ['operator_3e_3d',['operator&gt;=',['../class_string.html#ad55ec344221bba8a7447226bde7b00dc',1,'String']]],
-  ['operator_5b_5d',['operator[]',['../class_string.html#a277d6b29f7f152a03c81700b12e43e55',1,'String::operator[](unsigned int index) const'],['../class_string.html#a0c9922e5854f82cd9952fcb4d6006059',1,'String::operator[](unsigned int index)']]]
+  ['operator_5b_5d',['operator[]',['../class_string.html#a277d6b29f7f152a03c81700b12e43e55',1,'String::operator[](unsigned int index) const'],['../class_string.html#a0c9922e5854f82cd9952fcb4d6006059',1,'String::operator[](unsigned int index)']]],
+  ['origafter',['origAfter',['../class_json_modifier.html#aec8c0683c15ad68dc1cb8180321bf902',1,'JsonModifier']]]
 ];

@@ -80,9 +80,10 @@ Inheritance diagram for JsonBuffer:</div>
   <img src="class_json_buffer.png" usemap="#JsonBuffer_map" alt=""/>
   <map id="JsonBuffer_map" name="JsonBuffer_map">
 <area href="class_json_parser.html" title="API to the JsonParser. " alt="JsonParser" shape="rect" coords="0,56,310,80"/>
-<area href="class_json_writer.html" title="Class for building a JSON string. " alt="JsonWriter" shape="rect" coords="320,56,630,80"/>
+<area href="class_json_writer.html" title="Class for building a JSON string. " alt="JsonWriter" shape="rect" coords="480,56,790,80"/>
 <area href="class_json_parser_static.html" title="Creates a JsonParser with a static buffer. " alt="JsonParserStatic&lt; BUFFER_SIZE, MAX_TOKENS &gt;" shape="rect" coords="0,112,310,136"/>
-<area href="class_json_writer_static.html" title="Creates a JsonWriter with a statically allocated buffer. " alt="JsonWriterStatic&lt; BUFFER_SIZE &gt;" shape="rect" coords="320,112,630,136"/>
+<area href="class_json_modifier.html" title="Class for modifying a JSON object in place, without needing to make a copy of it. ..." alt="JsonModifier" shape="rect" coords="320,112,630,136"/>
+<area href="class_json_writer_static.html" title="Creates a JsonWriter with a statically allocated buffer. " alt="JsonWriterStatic&lt; BUFFER_SIZE &gt;" shape="rect" coords="640,112,950,136"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -99,6 +100,9 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a645819ad48ee172c01a482bef9c1f765"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a645819ad48ee172c01a482bef9c1f765">JsonBuffer</a> (char *<a class="el" href="class_json_buffer.html#aaee27fe51d12d68bd6031df3bc78b6b5">buffer</a>, size_t <a class="el" href="class_json_buffer.html#af06130f43f71623ea6afe049c846e52b">bufferLen</a>)</td></tr>
 <tr class="memdesc:a645819ad48ee172c01a482bef9c1f765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a <a class="el" href="class_json_buffer.html" title="Base class for managing a static or dynamic buffer, used by both JsonParser and JsonWriter. ">JsonBuffer</a> with an external buffer of a given size.  <a href="#a645819ad48ee172c01a482bef9c1f765">More...</a><br /></td></tr>
 <tr class="separator:a645819ad48ee172c01a482bef9c1f765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6721ab2b50d9b0bfc64d51c84c295230"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a6721ab2b50d9b0bfc64d51c84c295230">setBuffer</a> (char *<a class="el" href="class_json_buffer.html#aaee27fe51d12d68bd6031df3bc78b6b5">buffer</a>, size_t <a class="el" href="class_json_buffer.html#af06130f43f71623ea6afe049c846e52b">bufferLen</a>)</td></tr>
+<tr class="memdesc:a6721ab2b50d9b0bfc64d51c84c295230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the buffers to the specified buffer and length.  <a href="#a6721ab2b50d9b0bfc64d51c84c295230">More...</a><br /></td></tr>
+<tr class="separator:a6721ab2b50d9b0bfc64d51c84c295230"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1eb9d0cae3ef9a9ac56b8580bc70fe2e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a1eb9d0cae3ef9a9ac56b8580bc70fe2e">allocate</a> (size_t len)</td></tr>
 <tr class="memdesc:a1eb9d0cae3ef9a9ac56b8580bc70fe2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate the buffer using malloc/realloc.  <a href="#a1eb9d0cae3ef9a9ac56b8580bc70fe2e">More...</a><br /></td></tr>
 <tr class="separator:a1eb9d0cae3ef9a9ac56b8580bc70fe2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -115,6 +119,10 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#adedc049fc02ef5bad2b3f8e7a1ba17b6">getOffset</a> () const</td></tr>
 <tr class="memdesc:adedc049fc02ef5bad2b3f8e7a1ba17b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current offset for writing. <br /></td></tr>
 <tr class="separator:adedc049fc02ef5bad2b3f8e7a1ba17b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0043413c56e23d83f3b4dbe508a35315"><td class="memItemLeft" align="right" valign="top"><a id="a0043413c56e23d83f3b4dbe508a35315"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a0043413c56e23d83f3b4dbe508a35315">setOffset</a> (size_t <a class="el" href="class_json_buffer.html#aeb1ab3291108f351834f2e8c6784538c">offset</a>)</td></tr>
+<tr class="memdesc:a0043413c56e23d83f3b4dbe508a35315"><td class="mdescLeft">&#160;</td><td class="mdescRight">swets the current offset for writing <br /></td></tr>
+<tr class="separator:a0043413c56e23d83f3b4dbe508a35315"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a486352be5658e94b9b9bd13563801e68"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_json_buffer.html#a486352be5658e94b9b9bd13563801e68">getBufferLen</a> () const</td></tr>
 <tr class="memdesc:a486352be5658e94b9b9bd13563801e68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current length of the buffer.  <a href="#a486352be5658e94b9b9bd13563801e68">More...</a><br /></td></tr>
 <tr class="separator:a486352be5658e94b9b9bd13563801e68"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,10 +182,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">buffer</td><td>Pointer to the buffer</td></tr>
-    <tr><td class="paramname">bufferLen</td><td>The length of the buffer </td></tr>
+    <tr><td class="paramname">bufferLen</td><td>The length of the buffer</td></tr>
   </table>
   </dd>
 </dl>
+<p>This buffer will not be deleted when the object is destructed. </p>
 
 </div>
 </div>
@@ -354,6 +363,44 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 <p>Gets the current length of the buffer. </p>
 <p>The buffer length is either the bufferLen passed to the constructor that takes a buffer and bufferLen or the length allocated using allocate(len). </p>
+
+</div>
+</div>
+<a id="a6721ab2b50d9b0bfc64d51c84c295230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6721ab2b50d9b0bfc64d51c84c295230">&#9670;&nbsp;</a></span>setBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void JsonBuffer::setBuffer </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>bufferLen</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the buffers to the specified buffer and length. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Pointer to the buffer</td></tr>
+    <tr><td class="paramname">bufferLen</td><td>The length of the buffer</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This buffer will not be deleted when the object is destructed. </p>
 
 </div>
 </div>

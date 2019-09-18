@@ -1,10 +1,15 @@
 var searchData=
 [
+  ['setbuffer',['setBuffer',['../class_json_buffer.html#a6721ab2b50d9b0bfc64d51c84c295230',1,'JsonBuffer']]],
   ['setcharat',['setCharAt',['../class_string.html#a000b7c7b89bbd326a9b966a79bc838e8',1,'String']]],
   ['setfloatplaces',['setFloatPlaces',['../class_json_writer.html#aecd4d984a49fe59b0c4d892fe6d1e791',1,'JsonWriter']]],
+  ['setisfirst',['setIsFirst',['../class_json_writer.html#afc30ff673c866c7a2366a8c064b5a565',1,'JsonWriter']]],
+  ['setoffset',['setOffset',['../class_json_buffer.html#a0043413c56e23d83f3b4dbe508a35315',1,'JsonBuffer']]],
   ['size',['size',['../class_json_reference.html#a9a196b64764b2943c425cee334f0b999',1,'JsonReference']]],
   ['skipobject',['skipObject',['../class_json_parser.html#a182ab93b3639f0a99f37f9101eb48361',1,'JsonParser']]],
+  ['startappend',['startAppend',['../class_json_modifier.html#ab5bf356377a71120588413a4be998607',1,'JsonModifier']]],
   ['startarray',['startArray',['../class_json_writer.html#a7ccfcbf66a8ed9a2728e6f6ae4b705ec',1,'JsonWriter']]],
+  ['startmodify',['startModify',['../class_json_modifier.html#aa53d66feb3cd13165f3a2eac012a123b',1,'JsonModifier']]],
   ['startobject',['startObject',['../class_json_writer.html#a43d1a78bf211a2f12cfe9253462717ae',1,'JsonWriter']]],
   ['startobjectorarray',['startObjectOrArray',['../class_json_writer.html#a468e6c475bec83a7ec8cd7048cdbb31b',1,'JsonWriter']]],
   ['startswith',['startsWith',['../class_string.html#aa63267cdf821b619ffb0a103510ae6ff',1,'String::startsWith(const String &amp;prefix) const'],['../class_string.html#a2ea4d98b45263f59c9eb1f842b04b3af',1,'String::startsWith(const String &amp;prefix, unsigned int offset) const']]],

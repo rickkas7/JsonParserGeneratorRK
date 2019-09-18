@@ -175,6 +175,49 @@ This will output the JSON data:
 
 If you are sending float or double values you may want to limit the number of decimal places to send. This is done using [setFloatPlaces](http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer.html#aecd4d984a49fe59b0c4d892fe6d1e791).
 
+## JsonModifier
+
+The JsonModifier class (added in version 0.1.0) makes it possible to modify an existing object that has been parsed with JsonParser.
+
+You will typically process a JSON object using a `JsonParser` object, `addString()` or `addData()` method, then `parse()`.
+
+Assuming your `JsonParser` is in the variable `jp` you then construct a temporary modifier object on the stack like this:
+
+```
+JsonModifier mod(jp);
+```
+
+The most common thing to do is have a JSON object and you want to update the value, or insert the value if it does not exist:
+
+```
+mod.insertOrUpdateKeyValue(jp.getOuterObject(), "a", (int)1);
+```
+
+If the input JSON was empty, it would then be:
+
+```
+{"a":1}
+```
+
+You can add int, long, float, double, bool, and const char * objects this way.
+
+```
+mod.insertOrUpdateKeyValue(jp.getOuterObject(), "b", "testing");
+```
+
+This would change the object to:
+
+```
+{"a":1,"b":"testing"}
+```
+
+Updating an object will remove it from its current location and add it at the end of the object.
+
+Another common function is `appendArrayValue()` which appends to an array.
+
+You can also use `removeKeyValue()` and `removeArrayIndex()` to remove keys or array entries.
+
+
 ## Examples
 
 There are three Particle devices examples.
@@ -246,6 +289,10 @@ make check
 The test code is also a reference of various ways you can call the API.
 
 ## Version History
+
+### 0.1.0 (2019-09-18)
+
+Added support for JsonModifier, a class to modify an existing JSON object in place, without making a copy of it.
 
 ### 0.0.7 (2019-08-30)
 

@@ -3,6 +3,7 @@ var searchData=
   ['jsmn_5fparser',['jsmn_parser',['../struct_json_parser_generator_r_k_1_1jsmn__parser.html',1,'JsonParserGeneratorRK']]],
   ['jsmntok_5ft',['jsmntok_t',['../struct_json_parser_generator_r_k_1_1jsmntok__t.html',1,'JsonParserGeneratorRK']]],
   ['jsonbuffer',['JsonBuffer',['../class_json_buffer.html',1,'']]],
+  ['jsonmodifier',['JsonModifier',['../class_json_modifier.html',1,'']]],
   ['jsonparser',['JsonParser',['../class_json_parser.html',1,'']]],
   ['jsonparserstatic',['JsonParserStatic',['../class_json_parser_static.html',1,'']]],
   ['jsonparserstring',['JsonParserString',['../class_json_parser_string.html',1,'']]],

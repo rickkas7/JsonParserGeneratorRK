@@ -93,6 +93,17 @@ $(function() {
 <p>To make this easier, the <a href="http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer_auto_object.html">JsonWriterAutoObject</a> can be instantiated on the stack. When the object goes out of scope, it will automatically close the object. You use it like this:</p>
 <div class="fragment"><div class="line">{</div><div class="line">    JsonWriterAutoObject obj(&amp;jw);</div><div class="line"></div><div class="line">    // Add various types of data</div><div class="line">    jw.insertKeyValue(&quot;a&quot;, true);</div><div class="line">    jw.insertKeyValue(&quot;b&quot;, 1234);</div><div class="line">    jw.insertKeyValue(&quot;c&quot;, &quot;test&quot;);</div><div class="line">}</div></div><!-- fragment --><p>This will output the JSON data:</p>
 <div class="fragment"><div class="line">{\&quot;a\&quot;:true,\&quot;b\&quot;:1234,\&quot;c\&quot;:\&quot;test\&quot;}</div></div><!-- fragment --><p>If you are sending float or double values you may want to limit the number of decimal places to send. This is done using <a href="http://rickkas7.github.io/JsonParserGeneratorRK/class_json_writer.html#aecd4d984a49fe59b0c4d892fe6d1e791">setFloatPlaces</a>.</p>
+<h2><a class="el" href="class_json_modifier.html" title="Class for modifying a JSON object in place, without needing to make a copy of it. ...">JsonModifier</a></h2>
+<p>The <a class="el" href="class_json_modifier.html" title="Class for modifying a JSON object in place, without needing to make a copy of it. ...">JsonModifier</a> class (added in version 0.1.0) makes it possible to modify an existing object that has been parsed with <a class="el" href="class_json_parser.html" title="API to the JsonParser. ">JsonParser</a>.</p>
+<p>You will typically process a JSON object using a <code><a class="el" href="class_json_parser.html" title="API to the JsonParser. ">JsonParser</a></code> object, <code>addString()</code> or <code>addData()</code> method, then <code>parse()</code>.</p>
+<p>Assuming your <code><a class="el" href="class_json_parser.html" title="API to the JsonParser. ">JsonParser</a></code> is in the variable <code>jp</code> you then construct a temporary modifier object on the stack like this:</p>
+<div class="fragment"><div class="line">JsonModifier mod(jp);</div></div><!-- fragment --><p>The most common thing to do is have a JSON object and you want to update the value, or insert the value if it does not exist:</p>
+<div class="fragment"><div class="line">mod.insertOrUpdateKeyValue(jp.getOuterObject(), &quot;a&quot;, (int)1);</div></div><!-- fragment --><p>If the input JSON was empty, it would then be:</p>
+<div class="fragment"><div class="line">{&quot;a&quot;:1}</div></div><!-- fragment --><p>You can add int, long, float, double, bool, and const char * objects this way.</p>
+<div class="fragment"><div class="line">mod.insertOrUpdateKeyValue(jp.getOuterObject(), &quot;b&quot;, &quot;testing&quot;);</div></div><!-- fragment --><p>This would change the object to:</p>
+<div class="fragment"><div class="line">{&quot;a&quot;:1,&quot;b&quot;:&quot;testing&quot;}</div></div><!-- fragment --><p>Updating an object will remove it from its current location and add it at the end of the object.</p>
+<p>Another common function is <code>appendArrayValue()</code> which appends to an array.</p>
+<p>You can also use <code>removeKeyValue()</code> and <code>removeArrayIndex()</code> to remove keys or array entries.</p>
 <h2>Examples</h2>
 <p>There are three Particle devices examples.</p>
 <h3>1 - Parser</h3>
@@ -108,7 +119,12 @@ $(function() {
 <h2>Test code</h2>
 <p>The github repository also has code in the test directory. It can run an automated test of several sample data files to verify operation. It's run by doing something like:</p>
 <div class="fragment"><div class="line">cd test</div><div class="line">make</div></div><!-- fragment --><p>On Linux only, if you have valgrind installed, it can also do a build with valgrind checking to check for memory leaks and buffer overruns. It's run by doing:</p>
-<div class="fragment"><div class="line">cd test</div><div class="line">make check</div></div><!-- fragment --><p>The test code is also a reference of various ways you can call the API. </p>
+<div class="fragment"><div class="line">cd test</div><div class="line">make check</div></div><!-- fragment --><p>The test code is also a reference of various ways you can call the API.</p>
+<h2>Version History</h2>
+<h3>0.1.0 (2019-09-18)</h3>
+<p>Added support for <a class="el" href="class_json_modifier.html" title="Class for modifying a JSON object in place, without needing to make a copy of it. ...">JsonModifier</a>, a class to modify an existing JSON object in place, without making a copy of it.</p>
+<h3>0.0.7 (2019-08-30)</h3>
+<p>Fixed a bug in the 3-subscription example. The check for the part number should use strrchr, not strchr, because it needs to find the last slash before the part number for webhook multi-part responses. </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
