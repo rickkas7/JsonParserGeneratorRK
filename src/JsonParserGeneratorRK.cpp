@@ -116,6 +116,12 @@ bool JsonParser::allocateTokens(size_t maxTokens) {
 }
 
 bool JsonParser::parse() {
+	if (offset == 0) {
+		// If addString or addData is not called, or called with an empty string,
+		// do not return true, see issue #7.
+		return false;
+	}
+
 	if (tokens) {
 		// Try to use the existing token buffer if possible
 		JsonParserGeneratorRK::jsmn_init(&parser);

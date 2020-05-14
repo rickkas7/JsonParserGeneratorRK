@@ -711,6 +711,18 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// Calling parse on an empty buffer should return false
+	// https://github.com/rickkas7/JsonParserGeneratorRK/issues/7
+	{
+		JsonParser jp;
+		String s;
+
+		jp.addString("");
+		
+		bool bResult = jp.parse();
+		assert(!bResult);
+	}
+
 	// Writer test, unallocated buffer
 	{
 		JsonWriter jw;

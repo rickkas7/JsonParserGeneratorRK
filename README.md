@@ -290,6 +290,10 @@ The test code is also a reference of various ways you can call the API.
 
 ## Version History
 
+### 0.1.1 (2020-05-14)
+
+Fixed a bug where calling parse() on an empty buffer returns true. It should return false. See issue #7.
+
 ### 0.1.0 (2019-09-18)
 
 Added support for JsonModifier, a class to modify an existing JSON object in place, without making a copy of it.
@@ -298,6 +302,5 @@ Added support for JsonModifier, a class to modify an existing JSON object in pla
 
 Fixed a bug in the 3-subscription example. The check for the part number should use strrchr, not strchr, because it needs to 
 find the last slash before the part number for webhook multi-part responses.
-
 
 
