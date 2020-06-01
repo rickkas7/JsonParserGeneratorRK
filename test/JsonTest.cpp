@@ -708,7 +708,6 @@ int main(int argc, char *argv[]) {
 			assert(s == "T");
 
 		}
-
 	}
 
 	// Calling parse on an empty buffer should return false
@@ -721,6 +720,41 @@ int main(int argc, char *argv[]) {
 		
 		bool bResult = jp.parse();
 		assert(!bResult);
+	}
+
+	{
+		// https://community.particle.io/t/jsonparsergeneratorrk-parsing-a-child-key-from-a-firebase-get-webhook/56395
+		// {"-M5sN1MfCHcXHkLBlwWW":{"aug":false,"fan":true,"ign":true}}
+		JsonParserStatic<256, 14> jp;
+		String s;
+
+		char *data = readTestData("test2h.json");
+
+		jp.addString(data);
+		free(data);
+
+		bool bResult = jp.parse();
+		assert(bResult);
+
+		const JsonParserGeneratorRK::jsmntok_t *firstObject;
+		bResult = jp.getValueTokenByIndex(jp.getOuterObject(), 1, firstObject);
+		assert(bResult);
+		assert(firstObject != 0);
+
+		bool bValue;
+
+		bResult = jp.getValueByKey(firstObject, "aug", bValue);
+		assert(bResult);
+		assert(bValue == false);
+
+		bResult = jp.getValueByKey(firstObject, "fan", bValue);
+		assert(bResult);
+		assert(bValue == true);
+
+		bResult = jp.getValueByKey(firstObject, "ign", bValue);
+		assert(bResult);
+		assert(bValue == true);
+
 	}
 
 	// Writer test, unallocated buffer
