@@ -4,6 +4,8 @@
 
 #include "Particle.h"
 
+#include <vector>
+
 // You can mostly ignore the stuff in this namespace block. It's part of the jsmn library
 // that's used internally and you can mostly ignore. The actual API is the JsonParser C++ object
 // below.
@@ -1077,6 +1079,32 @@ public:
 	void insertArrayValue(T value) {
 		insertCheckSeparator();
 		insertValue(value);
+	}
+
+	/**
+	 * @brief Inserts an array of values into an array.
+	 *
+	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
+	 * for example: bool, int, float, double, const char *.
+	 */
+	template<class T>
+	void insertArray(T *pArray, size_t numElem) {
+		for(size_t ii = 0; ii < numElem; ii++) {
+			insertArrayValue(pArray[ii]);
+		}
+	}
+
+	/**
+	 * @brief Inserts an array of values into an array.
+	 *
+	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
+	 * for example: bool, int, float, double, const char *.
+	 */
+	template<class T>
+	void insertVector(std::vector<T> vec) {
+		for (auto it = vec.begin(); it != vec.end(); ++it) {
+			insertArrayValue(*it);
+		}
 	}
 
 	/**

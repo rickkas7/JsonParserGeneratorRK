@@ -290,6 +290,10 @@ The test code is also a reference of various ways you can call the API.
 
 ## Version History
 
+### 0.1.2 (2020-09-22)
+
+- Added JsonWriter methods insertArray() and insertVector() to make it easier to add arrays.
+
 ### 0.1.1 (2020-05-14)
 
 Fixed a bug where calling parse() on an empty buffer returns true. It should return false. See issue #7.

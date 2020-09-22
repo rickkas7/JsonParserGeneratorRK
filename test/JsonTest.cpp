@@ -926,6 +926,99 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// Writer test - int array
+	{
+		JsonWriterStatic<256> jw;
+
+		jw.startObject();
+
+		jw.setFloatPlaces(2);
+		jw.insertKeyValue("a", "test");
+
+		{
+			jw.insertKeyArray("b");
+
+			int array[3];
+			array[0] = 1;
+			array[1] = 2;
+			array[2] = 3;
+			jw.insertArray(array, sizeof(array)/sizeof(array[0]));
+ 
+			// This closes the "b" array
+			jw.finishObjectOrArray();
+		}
+		
+		// This closes the outer array
+		jw.finishObjectOrArray();
+
+		assertJsonWriterBuffer(jw, "{\"a\":\"test\",\"b\":[1,2,3]}");
+	}
+
+	// Writer test - float vector
+	{
+		JsonWriterStatic<256> jw;
+
+		jw.startObject();
+
+		jw.setFloatPlaces(2);
+		jw.insertKeyValue("a", "test");
+
+		{
+			jw.insertKeyArray("b");
+
+			std::vector<float> vector;
+			vector.push_back(1.1);
+			vector.push_back(2.2);
+			vector.push_back(3.333);
+
+			jw.insertVector(vector);
+			
+			// This closes the "b" array
+			jw.finishObjectOrArray();
+		}
+		
+		// This closes the outer array
+		jw.finishObjectOrArray();
+
+		assertJsonWriterBuffer(jw, "{\"a\":\"test\",\"b\":[1.10,2.20,3.33]}");
+
+	}
+ 
+	// Writer test - float vector #2
+	{
+		JsonWriterStatic<256> jw;
+
+		jw.startObject();
+
+		jw.setFloatPlaces(2);
+		jw.insertKeyValue("a", "test");
+
+		{
+			jw.insertKeyArray("b");
+
+			std::vector<float> vector;
+			vector.push_back(1.1);
+			vector.push_back(2.2);
+			vector.push_back(3.333);
+			if (vector.size() > 2) {
+				// Remove the first (oldest) element
+				vector.erase(vector.begin());
+			}
+
+			jw.insertVector(vector);
+			
+			// This closes the "b" array
+			jw.finishObjectOrArray();
+		}
+		
+		// This closes the outer array
+		jw.finishObjectOrArray();
+
+		assertJsonWriterBuffer(jw, "{\"a\":\"test\",\"b\":[2.20,3.33]}");
+
+	}
+
+
 	// Modifier test - make string longer
 	{
 		JsonParserStatic<512, 32> jp;
