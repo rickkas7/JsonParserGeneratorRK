@@ -1095,6 +1095,20 @@ public:
 	}
 
 	/**
+	 * @brief Inserts a new key and vector of values
+	 *
+	 * @param key the key name to insert
+	 * 
+	 * @param vec the vector to insert
+	 */
+	template<class T>
+	void insertKeyArray(const char *key, T *pArray, size_t numElem) {
+		insertKeyArray(key);
+		insertArray(pArray, numElem);
+		finishObjectOrArray();
+	}
+
+	/**
 	 * @brief Inserts an array of values into an array.
 	 *
 	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
@@ -1105,6 +1119,20 @@ public:
 		for (auto it = vec.begin(); it != vec.end(); ++it) {
 			insertArrayValue(*it);
 		}
+	}
+
+	/**
+	 * @brief Inserts a new key and vector of values
+	 *
+	 * @param key the key name to insert
+	 * 
+	 * @param vec the vector to insert
+	 */
+	template<class T>
+	void insertKeyVector(const char *key, std::vector<T> vec) {
+		insertKeyArray(key);
+		insertVector(vec);
+		finishObjectOrArray();
 	}
 
 	/**

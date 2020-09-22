@@ -290,8 +290,9 @@ The test code is also a reference of various ways you can call the API.
 
 ## Version History
 
-### 0.1.2 (2020-09-22)
+### 0.1.3 (2020-09-22)
 
+- Added JsonWriter methods insertKeyArray() and insertKeyVector() to make it easier to add arrays.
 - Added JsonWriter methods insertArray() and insertVector() to make it easier to add arrays.
 
 ### 0.1.1 (2020-05-14)

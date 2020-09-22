@@ -930,25 +930,19 @@ int main(int argc, char *argv[]) {
 	{
 		JsonWriterStatic<256> jw;
 
+		int array[3];
+		array[0] = 1;
+		array[1] = 2;
+		array[2] = 3;
+
 		jw.startObject();
 
 		jw.setFloatPlaces(2);
 		jw.insertKeyValue("a", "test");
 
-		{
-			jw.insertKeyArray("b");
-
-			int array[3];
-			array[0] = 1;
-			array[1] = 2;
-			array[2] = 3;
-			jw.insertArray(array, sizeof(array)/sizeof(array[0]));
- 
-			// This closes the "b" array
-			jw.finishObjectOrArray();
-		}
+		jw.insertKeyArray("b", array, sizeof(array)/sizeof(array[0]));
 		
-		// This closes the outer array
+		// This closes the outer object
 		jw.finishObjectOrArray();
 
 		assertJsonWriterBuffer(jw, "{\"a\":\"test\",\"b\":[1,2,3]}");
@@ -958,26 +952,18 @@ int main(int argc, char *argv[]) {
 	{
 		JsonWriterStatic<256> jw;
 
+		std::vector<float> vector;
+		vector.push_back(1.1);
+		vector.push_back(2.2);
+		vector.push_back(3.333);
+
 		jw.startObject();
 
 		jw.setFloatPlaces(2);
 		jw.insertKeyValue("a", "test");
+		jw.insertKeyVector("b", vector);
 
-		{
-			jw.insertKeyArray("b");
-
-			std::vector<float> vector;
-			vector.push_back(1.1);
-			vector.push_back(2.2);
-			vector.push_back(3.333);
-
-			jw.insertVector(vector);
-			
-			// This closes the "b" array
-			jw.finishObjectOrArray();
-		}
-		
-		// This closes the outer array
+		// This closes the outer object
 		jw.finishObjectOrArray();
 
 		assertJsonWriterBuffer(jw, "{\"a\":\"test\",\"b\":[1.10,2.20,3.33]}");
@@ -988,36 +974,28 @@ int main(int argc, char *argv[]) {
 	{
 		JsonWriterStatic<256> jw;
 
+		std::vector<float> vector;
+		vector.push_back(1.1);
+		vector.push_back(2.2);
+		vector.push_back(3.333);
+		if (vector.size() > 2) {
+			// Remove the first (oldest) element
+			vector.erase(vector.begin());
+		}
+
 		jw.startObject();
 
 		jw.setFloatPlaces(2);
 		jw.insertKeyValue("a", "test");
+		jw.insertKeyVector("b", vector);
 
-		{
-			jw.insertKeyArray("b");
-
-			std::vector<float> vector;
-			vector.push_back(1.1);
-			vector.push_back(2.2);
-			vector.push_back(3.333);
-			if (vector.size() > 2) {
-				// Remove the first (oldest) element
-				vector.erase(vector.begin());
-			}
-
-			jw.insertVector(vector);
-			
-			// This closes the "b" array
-			jw.finishObjectOrArray();
-		}
 		
-		// This closes the outer array
+		// This closes the outer object
 		jw.finishObjectOrArray();
 
 		assertJsonWriterBuffer(jw, "{\"a\":\"test\",\"b\":[2.20,3.33]}");
 
 	}
-
 
 	// Modifier test - make string longer
 	{
