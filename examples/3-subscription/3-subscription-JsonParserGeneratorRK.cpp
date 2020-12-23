@@ -23,24 +23,19 @@ void loop() {
 }
 
 void subscriptionHandler(const char *event, const char *data) {
-	int responseIndex = 0;
-
-	const char *slashOffset = strrchr(event, '/');
-	if (slashOffset) {
-		responseIndex = atoi(slashOffset + 1);
-	}
-
-	if (responseIndex == 0) {
-		jsonParser.clear();
-	}
-	jsonParser.addString(data);
+	
+	jsonParser.addChunkedData(event, data);
 
 	if (jsonParser.parse()) {
 		// Looks valid (we received all parts)
 
 		// This printing thing is just for testing purposes, you should use the commands to
-		// process data
+		// process data and extract the parts you need
 		printJson(jsonParser);
+
+		// After parsing be sure to clear the data so the next set of responses will start
+		// fresh with no data saved.
+		jsonParser.clear();
 	}
 }
 

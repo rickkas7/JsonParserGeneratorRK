@@ -206,6 +206,26 @@ public:
 	bool addData(const char *data, size_t dataLen);
 
 	/**
+	 * @brief Add chunked multipart data, typically from an event subscription handler
+	 * 
+	 * @param event The event name. Used to find the multipart segment number at the end
+	 * 
+	 * @param data The event data (c-string)
+	 * 
+	 * @param chunkSize The size of all chunks except the last one (default: 512 bytes)
+	 * 
+	 * This method makes several assumptions that are specific to the way chunked webhook
+	 * hook-response events are returned:
+	 * 
+	 * - All chunks (except possibly the last) are chunkSize bytes. This is always 512, and that's 
+	 * the default value of the chunkSize parameter.
+	 * - Chunks may arrive out-of-order.
+	 * - Event names end in /0 for the first chunk, /1 for the second, ... with the number being
+	 * a decimal number in ASCII, limited only by available RAM.
+	 */
+	bool addChunkedData(const char *event, const char *data, size_t chunkSize = 512);
+	
+	/**
 	 * @brief Gets a pointer to the internal buffer
 	 *
 	 * Note: The internal buffer is not null-terminated!
@@ -233,7 +253,7 @@ public:
 	/**
 	 * @brief Clears the current buffer for writing.
 	 *
-	 * This only sets the offset to 0, it does not clear the bytes.
+	 * This sets the offset to 0 and also zeroes all of the bytes.
 	 */
 	void clear();
 

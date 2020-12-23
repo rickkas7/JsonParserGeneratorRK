@@ -290,6 +290,10 @@ The test code is also a reference of various ways you can call the API.
 
 ## Version History
 
+### 0.1.4 (2020-12-23)
+
+- Added addChunkedData() method to support subscribing to multi-part webhook response events.
+
 ### 0.1.3 (2020-09-22)
 
 - Added JsonWriter methods insertKeyArray() and insertKeyVector() to make it easier to add arrays.

@@ -59,8 +59,47 @@ bool JsonBuffer::addData(const char *data, size_t dataLen) {
 	return true;
 }
 
+bool JsonBuffer::addChunkedData(const char *event, const char *data, size_t chunkSize) {
+
+	// Multipart hook-response events end in /0, /1, ... 
+	int responseIndex = 0;
+	const char *slashOffset = strrchr(event, '/');
+	if (slashOffset) {
+		responseIndex = atoi(slashOffset + 1);
+	}
+
+	// Note: We don't clear on /0 (responseIndex == 0) here, because an out-of-order
+	// response of /1 then /0 would cause the /1 chunk to be discarded. You need to
+	// clear after a successful parse, not on /0.
+
+	size_t len = strlen(data);
+
+	// Assumption: len will be chunkSize (512 bytes), except for the last chunk which
+	// can be smaller.
+	size_t curOffset = responseIndex * chunkSize;
+	if (!buffer || (curOffset + len) > bufferLen) {
+		// Need to allocate more space for data
+		if (!allocate(curOffset + len)) {
+			return false;
+		}
+	}
+
+	memcpy(&buffer[curOffset], data, len);
+
+	curOffset += len;
+	if (curOffset > offset) {
+		offset = curOffset;
+	}
+
+	return true;
+}
+
+
 void JsonBuffer::clear() {
 	offset = 0;
+	if (buffer && bufferLen) {
+		memset(buffer, 0, bufferLen);
+	}
 }
 
 void JsonBuffer::nullTerminate() {

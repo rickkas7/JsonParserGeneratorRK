@@ -27,6 +27,29 @@ char *readTestData(const char *filename) {
 	return data;
 }
 
+char chunkBuf[513];
+char eventName[65];
+
+bool getChunk(const char *data, size_t chunkIndex, const char *eventPrefix) {
+	size_t len = strlen(data);
+
+	size_t offset = chunkIndex * 512;
+	if (offset >= len) {
+		return false;
+	}
+
+	len -= offset;
+	if (len > 512) {
+		len = 512;
+	}
+	memcpy(chunkBuf, &data[offset], len);
+	chunkBuf[len] = 0;
+
+	snprintf(eventName, sizeof(eventName), "%s/%zu", eventPrefix, chunkIndex);
+
+	return true;
+}
+
 void _assertJsonParserBuffer(JsonParser &jp, const char *expected, size_t line) {
 	char *actual = (char *) malloc(jp.getOffset() + 1);
 	strncpy(actual, jp.getBuffer(), jp.getOffset());
@@ -757,6 +780,222 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// 
+	// Chunked Tests
+	//
+
+	// Chunked single part (511 bytes)
+	{
+		JsonParserStatic<1024, 10> jp;
+		bool bResult;
+
+		char *data = readTestData("test3a.json");
+
+		bResult = getChunk(data, 0, "hook-response/testEvent");
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		free(data);
+	}
+	// Chunked single part (512 bytes)
+	{
+		JsonParserStatic<1024, 10> jp;
+		bool bResult;
+
+		char *data = readTestData("test3b.json");
+
+		bResult = getChunk(data, 0, "hook-response/testEvent");
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		free(data);
+	}
+	// Chunked multi part (513 bytes)
+	{
+		JsonParserStatic<1024, 10> jp;
+		bool bResult;
+
+		char *data = readTestData("test3d.json");
+		
+		const char *eventPrefix = "hook-response/testEvent";
+
+		bResult = getChunk(data, 0, eventPrefix);
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = jp.parse(); // Should be false here
+		assert(!bResult);
+
+		bResult = getChunk(data, 1, eventPrefix);
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		free(data);
+	}
+
+	// Chunked multi part (513 bytes) - reversed order
+	{
+		JsonParserStatic<1024, 10> jp;
+		bool bResult;
+
+		char *data = readTestData("test3d.json");
+		
+		const char *eventPrefix = "hook-response/testEvent";
+
+		bResult = getChunk(data, 1, eventPrefix);
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = jp.parse(); // Should be false here
+		assert(!bResult);
+
+		bResult = getChunk(data, 0, eventPrefix);
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		free(data);
+	}
+	// Chunked multi part (6023 bytes) - 12 chunks
+	{
+		JsonParserStatic<8192, 20> jp;
+		bool bResult;
+
+		char *data = readTestData("test3e.json");
+		
+		const char *eventPrefix = "hook-response/testEvent";
+
+		for(size_t chunkIndex = 0; ; chunkIndex++) {
+			bResult = getChunk(data, chunkIndex, eventPrefix);
+			if (!bResult) {
+				break;
+			}
+
+			bResult = jp.addChunkedData(eventName, chunkBuf);
+			assert(bResult);
+		}
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		free(data);
+	}
+
+	// Chunked multi part (6023 bytes) - 12 chunks out of order
+	{
+		JsonParserStatic<8192, 20> jp;
+		bool bResult;
+
+		char *data = readTestData("test3e.json");
+		
+		const char *eventPrefix = "hook-response/testEvent";
+
+		const size_t ordering[12] = { 0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 2, 3 };
+
+		for(size_t chunkIndex = 0; chunkIndex < 12; chunkIndex++) {
+			bResult = getChunk(data, ordering[chunkIndex], eventPrefix);
+			assert(bResult);
+
+			bResult = jp.addChunkedData(eventName, chunkBuf);
+			assert(bResult);
+		}
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		// Test buffer clearing
+		jp.clear();
+
+		bResult = getChunk(data, 0, eventPrefix);
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		bResult = getChunk(data, 11, eventPrefix);
+		assert(bResult);
+
+		bResult = jp.addChunkedData(eventName, chunkBuf);
+		assert(bResult);
+
+		// The previous data should have been cleared from the buffer so adding 
+		// data at the end should still fail to parse
+		bResult = jp.parse();
+		assert(!bResult);
+
+		free(data);
+	}
+
+	// Chunked multi part (6023 bytes) - 12 chunks, dynamic allocation
+	{
+		JsonParser jp;
+		bool bResult;
+
+		char *data = readTestData("test3e.json");
+		
+		const char *eventPrefix = "012345678901234567890123/hook-response/testEvent";
+
+		for(size_t chunkIndex = 0; ; chunkIndex++) {
+			bResult = getChunk(data, chunkIndex, eventPrefix);
+			if (!bResult) {
+				break;
+			}
+
+			bResult = jp.addChunkedData(eventName, chunkBuf);
+			assert(bResult);
+		}
+
+		bResult = jp.parse();
+		assert(bResult);
+
+		assert(jp.getOffset() == strlen(data));
+		assert(strncmp(jp.getBuffer(), data, strlen(data)) == 0);
+
+		free(data);
+	}	
+
+
 	// Writer test, unallocated buffer
 	{
 		JsonWriter jw;
@@ -997,6 +1236,35 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// Writer Test
+	// https://community.particle.io/t/json-parser-and-generator-in-device-os/56147/7
+	{
+		JsonWriterStatic<256> jw;
+
+		jw.startObject(); // Start outer object
+
+		jw.setFloatPlaces(2);
+
+		jw.insertKeyObject("f"); // Start inner object 
+			jw.insertKeyValue("g", "Call me \"John\"");
+			jw.insertKeyValue("h", -.78);
+		jw.finishObjectOrArray(); // End inner object
+
+		jw.finishObjectOrArray(); // End outer object
+
+		// printf("%s\n", jw.getBuffer());	
+		assertJsonWriterBuffer(jw, "{\"f\":{\"g\":\"Call me \\\"John\\\"\",\"h\":-0.78}}");
+	}
+
+/*
+{
+   "f":
+       {
+           "g":"Call me \"John\"",
+           "h":-0.78
+       }
+}
+*/
 	// Modifier test - make string longer
 	{
 		JsonParserStatic<512, 32> jp;
