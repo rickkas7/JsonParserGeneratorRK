@@ -290,6 +290,10 @@ The test code is also a reference of various ways you can call the API.
 
 ## Version History
 
+### 0.1.5 (2021-08-18)
+
+- Added JsonWriter::insertKeyJson so you can insert a pre-formatted JSON object into an existing JsonWriter.
+
 ### 0.1.4 (2020-12-23)
 
 - Added addChunkedData() method to support subscribing to multi-part webhook response events.

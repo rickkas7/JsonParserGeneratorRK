@@ -757,6 +757,13 @@ void JsonWriter::insertChar(char ch) {
 	}
 }
 
+void JsonWriter::insertJson(const char *json) {
+	for(size_t ii = 0; json[ii]; ii++) {
+		insertChar(json[ii]);
+	}
+}
+
+
 void JsonWriter::insertString(const char *s, bool quoted) {
 	// 0x00000000 - 0x0000007F:
 
@@ -910,6 +917,15 @@ void JsonWriter::insertKeyArray(const char *key) {
 	setIsFirst();
 	startArray();
 }
+
+void JsonWriter::insertKeyJson(const char *key, const char *json) {
+	insertCheckSeparator();
+	insertValue(key);
+	insertChar(':');
+	insertJson(json);
+	setIsFirst(false);
+}
+
 
 void JsonWriter::setIsFirst(bool isFirst /* = true */) {
 	context[contextIndex].isFirst = isFirst;

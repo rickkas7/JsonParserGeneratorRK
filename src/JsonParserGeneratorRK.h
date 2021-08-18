@@ -1076,6 +1076,15 @@ public:
 	void insertKeyArray(const char *key);
 
 	/**
+	 * @brief Inserts a new key and an existing valid JSON object or array in a c-string
+	 *
+	 * @param key the key name to insert
+	 * 
+	 * @param json The object or array to insert, a c-string. Must already be valid JSON.
+	 */
+	void insertKeyJson(const char *key, const char *json);
+
+	/**
 	 * @brief Inserts a key/value pair into an object.
 	 *
 	 * Uses templates so you can pass any type object that's supported by insertValue() overloads,
@@ -1191,6 +1200,13 @@ public:
 	 * Used internally. You should use insertKeyValue() or insertArrayValue() with a string instead.
 	 */
 	void insertChar(char ch);
+
+	/**
+	 * @brief Used to insert a string of existing JSON (typically a preformatted object or array) into a writer
+	 *
+	 * @param json The object or array to insert, a c-string. Must already be valid JSON.
+	 */
+	void insertJson(const char *json);
 
 	/**
 	 * @brief Used internally to insert a string, quoted or not.

@@ -1256,6 +1256,22 @@ int main(int argc, char *argv[]) {
 		assertJsonWriterBuffer(jw, "{\"f\":{\"g\":\"Call me \\\"John\\\"\",\"h\":-0.78}}");
 	}
 
+	// Writer test - insert literal JSON
+	// https://community.particle.io/t/creating-nested-json-string-by-passing-jsonbufferwriter-object-to-a-function/60986
+	{
+		JsonWriterStatic<256> jw;
+
+		const char *json = "{\"a\":\"test\",\"b\":[1,2,3]}";
+
+		jw.startObject(); // Start outer object
+			jw.insertKeyJson("a", json);
+		jw.finishObjectOrArray(); // End outer object
+
+		// printf("%s\n", jw.getBuffer());	
+		assertJsonWriterBuffer(jw, "{\"a\":{\"a\":\"test\",\"b\":[1,2,3]}}");
+
+	}
+
 /*
 {
    "f":
