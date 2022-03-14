@@ -4,12 +4,12 @@ all : JsonTest
 	./JsonTest
 
 JsonTest : JsonTest.cpp ../src/JsonParserGeneratorRK.cpp ../src/JsonParserGeneratorRK.h libwiringgcc
-	gcc JsonTest.cpp ../src/JsonParserGeneratorRK.cpp gcclib/libwiringgcc.a -std=c++11 -lc++ -Igcclib -I../src -o JsonTest
+	gcc JsonTest.cpp ../src/JsonParserGeneratorRK.cpp UnitTestLib/libwiringgcc.a -std=c++11 -lc++ -IUnitTestLib -I../src -o JsonTest
 
 check : JsonTest.cpp ../src/JsonParserGeneratorRK.cpp ../src/JsonParserGeneratorRK.h libwiringgcc
-	gcc JsonTest.cpp ../src/JsonParserGeneratorRK.cpp gcclib/libwiringgcc.a -g -O0 -std=c++11 -lc++ -Igcclib -I ../src -o JsonTest && valgrind --leak-check=yes ./JsonTest 
+	gcc JsonTest.cpp ../src/JsonParserGeneratorRK.cpp UnitTestLib/libwiringgcc.a -g -O0 -std=c++11 -lc++ -IUnitTestLib -I ../src -o JsonTest && valgrind --leak-check=yes ./JsonTest 
 
 libwiringgcc :
-	cd gcclib && make libwiringgcc.a 	
+	cd UnitTestLib && make libwiringgcc.a 	
 	
 .PHONY: libwiringgcc

@@ -272,7 +272,15 @@ It also demonstrates how to handle multi-part webhook responses.
 
 ## Test code
 
-The github repository also has code in the test directory. It can run an automated test of several sample data files to verify operation. It's run by doing something like:
+The github repository also has code in the test directory. It can run an automated test of several sample data files to verify operation. 
+
+It uses a library for native implementation of a small subset of Device OS libraries. Every time you create a fresh clone of the JsonParserGeneratorRK repo you must also update the submodules:
+
+```
+git submodule update --init --recursive
+```
+
+The test is run by doing something like:
 
 ```
 cd test

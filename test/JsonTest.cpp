@@ -1884,6 +1884,24 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	// High level insertOrUpdateKeyValue API test
+	{
+		JsonParserStatic<512, 32> jp;
+
+		jp.addString("{\"t1\":1234,\"t2\":\"testing 2!\"}");
+
+		jp.parse();
+
+		//printTokens(jp);
+
+		JsonModifier mod(jp);
+
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "t3", -5.5);
+		mod.insertOrUpdateKeyValue(jp.getOuterObject(), "t4", false);
+
+		assertJsonParserBuffer(jp, "{\"t1\":1234,\"t2\":\"testing 2!\",\"t3\":-5.500000,\"t4\":false}");
+	}
+
 	// High level appendArrayValue API test
 	{
 		JsonParserStatic<512, 32> jp;
