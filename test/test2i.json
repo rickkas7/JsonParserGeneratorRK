@@ -1,0 +1,16 @@
+{
+    "nodes":[
+         {
+             "nodeNumber":1,
+             "deviceID":"aaaaaaaaaaaaaaaaaaaaa1",
+             "lastConnect":1667835489,
+             "sensorType":1
+         },
+         {
+             "nodeNumber":2,
+             "deviceID":"aaaaaaaaaaaaaaaaaaaaa2",
+             "lastConnect":1667836000,
+             "sensorType":2
+         }
+    ]   
+  }

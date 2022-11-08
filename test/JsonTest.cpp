@@ -733,6 +733,84 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	// From community post:
+	// https://community.particle.io/t/jsonparsergeneratorrk-question/63457/6
+	{
+		// 
+		JsonParserStatic<1024, 50> jp;
+		String s;
+
+		char *data = readTestData("test2i.json");
+
+		jp.addString(data);
+		free(data);
+
+		bool bResult = jp.parse();
+		assert(bResult);
+
+		const JsonParserGeneratorRK::jsmntok_t *nodesArrayContainer;
+
+		bResult = jp.getValueTokenByKey(jp.getOuterObject(), "nodes", nodesArrayContainer);
+		assert(bResult);
+
+		assert(bResult);
+
+		const JsonParserGeneratorRK::jsmntok_t *nodeObjectContainer;
+
+		nodeObjectContainer = jp.getTokenByIndex(nodesArrayContainer, 0);
+		assert(nodeObjectContainer != NULL);
+
+		int nodeNumber;
+		String deviceID;
+		int lastConnect;
+		int sensorType;
+	
+		bResult = jp.getValueByKey(nodeObjectContainer, "nodeNumber", nodeNumber);
+		assert(bResult);
+		assert(nodeNumber == 1);
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "deviceID", deviceID);
+		assert(bResult);
+		assert(deviceID == "aaaaaaaaaaaaaaaaaaaaa1");
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "lastConnect", lastConnect);
+		assert(bResult);
+		assert(lastConnect == 1667835489);
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "sensorType", sensorType);
+		assert(bResult);
+		assert(sensorType == 1);
+
+		nodeObjectContainer = jp.getTokenByIndex(nodesArrayContainer, 1);
+		assert(nodeObjectContainer != NULL);
+		
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "nodeNumber", nodeNumber);
+		assert(bResult);
+		assert(nodeNumber == 2);
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "deviceID", deviceID);
+		assert(bResult);
+		assert(deviceID == "aaaaaaaaaaaaaaaaaaaaa2");
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "lastConnect", lastConnect);
+		assert(bResult);
+		assert(lastConnect == 1667836000);
+
+		bResult = jp.getValueByKey(nodeObjectContainer, "sensorType", sensorType);
+		assert(bResult);
+		assert(sensorType == 2);
+
+		nodeObjectContainer = jp.getTokenByIndex(nodesArrayContainer, 2);
+		assert(nodeObjectContainer == NULL);
+
+
+
+
+
+
+	}
+
 	// Calling parse on an empty buffer should return false
 	// https://github.com/rickkas7/JsonParserGeneratorRK/issues/7
 	{
