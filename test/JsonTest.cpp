@@ -823,6 +823,40 @@ int main(int argc, char *argv[]) {
 		assert(!bResult);
 	}
 
+	// https://community.particle.io/t/how-to-handle-json-parsecopy-errors/66813
+	{
+		JsonParserStatic<256, 14> jp;
+		String s;
+
+		jp.addString("{\"flashEnabled\":true}");
+
+		bool bResult = jp.parse();
+		assert(bResult);
+
+		bool bValue;
+
+		bResult = jp.getValueByKey(jp.getOuterObject(), "flashEnabled", bValue);
+		assert(bResult);
+		assert(bValue == true);
+
+	}
+	{
+		JsonParserStatic<256, 14> jp;
+		String s;
+
+		jp.addString("{flashEnabled;true}");
+
+		bool bResult = jp.parse();
+		assert(bResult);
+
+		bool bValue;
+
+		bResult = jp.getValueByKey(jp.getOuterObject(), "flashEnabled", bValue);
+		assert(!bResult); // Not valid
+
+	}
+
+
 	{
 		// https://community.particle.io/t/jsonparsergeneratorrk-parsing-a-child-key-from-a-firebase-get-webhook/56395
 		// {"-M5sN1MfCHcXHkLBlwWW":{"aug":false,"fan":true,"ign":true}}
